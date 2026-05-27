@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -11,21 +12,22 @@ import java.util.List;
 import java.util.Locale;
 
 public class TsvFileReader {
-  private String fileDirectory;
+  private File fileDirectory;
+  private static final Integer LINE_LENGTH = 7;
 
-  public TsvFileReader(String fileDirectory) throws IOException {
+  public TsvFileReader(File fileDirectory) throws IOException {
     this.fileDirectory = fileDirectory;
     readFile(fileDirectory);
   }
 
-  public List<TsvDTO> readFile(String fileDirectory) throws IOException {
+  public List<TsvDTO> readFile(File fileDirectory) throws IOException {
     List<TsvDTO> records = new ArrayList<>();
     try {
       BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
       String line;
       while ((line = br.readLine()) != null) {
         String[] data = line.split("\t");
-        if (data.length >= 7) {
+        if (data.length >= LINE_LENGTH) {
           String[] localizationParts = data[0].split("_");
           Locale localization = Locale.of(localizationParts[0], localizationParts[1]);
 

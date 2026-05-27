@@ -5,7 +5,9 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class TsvFileReader {
@@ -16,7 +18,8 @@ public class TsvFileReader {
     readFile(fileDirectory);
   }
 
-  public void readFile(String fileDirectory) throws IOException {
+  public List<TsvDTO> readFile(String fileDirectory) throws IOException {
+    List<TsvDTO> records = new ArrayList<>();
     try {
       BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
       String line;
@@ -44,13 +47,15 @@ public class TsvFileReader {
 
           String currencySymbol = data[6];
 
-          TsvDTO record =
+          records.add(
               new TsvDTO(
-                  localization, country, departureDate, arrivalDate, place, price, currencySymbol);
+                  localization, country, departureDate, arrivalDate, place, price, currencySymbol));
+          break;
         }
       }
     } catch (IOException | ParseException e) {
       System.out.println("Err");
     }
+    return records;
   }
 }

@@ -1,0 +1,34 @@
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+public class TsvMapper {
+    private TsvMapper() {
+    }
+
+    public static OfferEntity toEntity(final TsvDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Input parameter dto is null.");
+        }
+
+        return new OfferEntity(
+                dto.localization,
+                dto.country,
+                dto.departureDate,
+                dto.arrivalDate,
+                dto.place,
+                dto.price,
+                dto.currencySymbol
+        );
+    }
+
+    public static List<OfferEntity> toEntity(final List<TsvDTO> dtoList) {
+        if (dtoList == null) {
+            return List.of();
+        }
+        return dtoList.stream()
+                .filter(Objects::nonNull)
+                .map(TsvMapper::toEntity)
+                .collect(Collectors.toList());
+    }
+}

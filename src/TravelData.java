@@ -50,12 +50,16 @@ public class TravelData {
         return listOfOffers;
     }
 
-    private String translation(String country, Locale source, Locale target) {
+    public String translation(String country, Locale source, Locale target) {
         for (Locale loc : Locale.getAvailableLocales()) {
             if (loc.getDisplayCountry(source).equalsIgnoreCase(country)) {
                 return loc.getDisplayCountry(target);
             }
         }
         return country;
+    }
+
+    public List<OfferEntity> getOffers() {
+        return offers;
     }
 }

@@ -6,7 +6,7 @@ import java.util.*;
 
 public class TravelData {
     private TsvMapper tsvMapper = new TsvMapper();
-    private List<OfferEntity> offers = new ArrayList<>();
+    private final List<OfferEntity> offers = new ArrayList<>();
 
     TravelData(File fileDirectory) throws IOException {
         TsvFileReader tsvFileReader = new TsvFileReader(fileDirectory);
@@ -17,7 +17,7 @@ public class TravelData {
         for (File file : files) {
             if (file.isFile()) {
                 List<TsvDTO> list = tsvFileReader.readFile(file);
-                offers = TsvMapper.toEntity(list);
+                offers.addAll(TsvMapper.toEntity(list));
             }
         }
     }
@@ -28,7 +28,7 @@ public class TravelData {
         Locale target = tsvFileReader.localizationConvert(loc);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, target);
         NumberFormat numberFormat = NumberFormat.getNumberInstance(target);
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("Labels", target);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("offers", target);
 
         for (OfferEntity offer : offers) {
             String country = translation(offer.country, offer.localization, target);
@@ -39,13 +39,12 @@ public class TravelData {
 
             try {
                 place = resourceBundle.getString(offer.place);
-            } catch (MissingResourceException e) {
-                e.getMessage();
+            } catch (MissingResourceException _) {
             }
 
             String price = numberFormat.format(offer.price);
 
-            String description = String.format(country, departure, arrival, place, price, offer.currencySymbol);
+            String description = String.format("%s %s %s %s %s %s ", country, departure, arrival, place, price, offer.currencySymbol);
             listOfOffers.add(description);
         }
         return listOfOffers;

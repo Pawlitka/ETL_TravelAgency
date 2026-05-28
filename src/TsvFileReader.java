@@ -38,14 +38,13 @@ public class TsvFileReader {
                     Date departureDate = dateParser(data[2]);
                     Date arrivalDate = dateParser(data[3]);
 
-                    String place = data[4];
+                    String place = normalizePlaces(data[4], localization);
                     Double price = priceParser(localization, data[5]);
                     String currencySymbol = data[6];
 
                     records.add(
                             new TsvDTO(
                                     localization, country, departureDate, arrivalDate, place, price, currencySymbol));
-                    break;
                 }
             }
         } catch (IOException | ParseException e) {
@@ -74,5 +73,33 @@ public class TsvFileReader {
 
     public List<TsvDTO> getRecords() {
         return records;
+    }
+
+    private String normalizePlaces(String place, Locale localization) {
+        if (place == null) return "";
+        String toLowerCase = place.toLowerCase().trim();
+        String language = localization.getLanguage();
+
+        return switch (language) {
+            case "pl" -> switch (toLowerCase) {
+                case "morze" -> "sea";
+                case "jezioro" -> "lake";
+                case "góry" -> "mountains";
+                default -> place;
+            };
+            case "de" -> switch (toLowerCase) {
+                case "meer" -> "sea";
+                case "see" -> "lake";
+                case "gebirge" -> "mountains";
+                default -> place;
+            };
+            case "en" -> switch (toLowerCase) {
+                case "sea" -> "sea";
+                case "lake" -> "lake";
+                case "mountains" -> "mountains";
+                default -> place;
+            };
+            default -> place;
+        };
     }
 }

@@ -18,10 +18,12 @@ public class TsvFileReader {
 
     public TsvFileReader(File fileDirectory) throws IOException {
         this.fileDirectory = fileDirectory;
-        readFile(fileDirectory);
     }
 
-    public void readFile(File fileDirectory) throws IOException {
+    public TsvFileReader() {
+    }
+
+    public List<TsvDTO> readFile(File fileDirectory) throws IOException {
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
             String line;
@@ -49,21 +51,22 @@ public class TsvFileReader {
         } catch (IOException | ParseException e) {
             System.out.println("Err");
         }
+        return records;
     }
 
-    private Locale localizationConvert(String data) {
+    public Locale localizationConvert(String data) {
         String[] localizationParts = data.split("_");
         return Locale.of(localizationParts[0], localizationParts[1]);
     }
 
-    private Date dateParser(String date) {
+    public Date dateParser(String date) {
         LocalDate localDate = LocalDate.parse(date);
 
 
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
-    private Double priceParser(Locale localization, String data) throws ParseException {
+    public Double priceParser(Locale localization, String data) throws ParseException {
         NumberFormat format = NumberFormat.getInstance(localization);
         Number number = format.parse(data);
         return number.doubleValue();

@@ -48,7 +48,7 @@ public class TsvFileReader {
                 }
             }
         } catch (IOException | ParseException e) {
-            System.out.println("Err");
+            e.printStackTrace();
         }
         return records;
     }
@@ -69,10 +69,6 @@ public class TsvFileReader {
         NumberFormat format = NumberFormat.getInstance(localization);
         Number number = format.parse(data);
         return number.doubleValue();
-    }
-
-    public List<TsvDTO> getRecords() {
-        return records;
     }
 
     private String normalizePlaces(String place, Locale localization) {

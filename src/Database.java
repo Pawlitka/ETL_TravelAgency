@@ -10,11 +10,10 @@ import java.util.ResourceBundle;
 public class Database {
     private final String url;
 
-
     private TravelData travelData;
     private Connection connection;
-    private JFrame frame;
-    private JTable table;
+    private JFrame dbFrame;
+    private JTable dbTable;
     private JComboBox<String> localeComboBox;
     private DefaultTableModel tableModel;
 
@@ -30,55 +29,15 @@ public class Database {
     }
 
     public void create() throws SQLException {
-        String droppingTable = "DROP TABLE IF EXISTS offers;";
-
-        String creatingTable = "CREATE TABLE offers (" +
-                "id INT AUTO_INCREMENT PRIMARY KEY," +
-                "locale VARCHAR(10)," +
-                "country VARCHAR(100)," +
-                "departure_date VARCHAR(10)," +
-                "arrival_date VARCHAR(10)," +
-                "place VARCHAR(50)," +
-                "price DOUBLE," +
-                "currencySymbol VARCHAR(10)" +
-                ");";
-
-        String insert = "INSERT INTO offers(" +
-                "locale, country, departure_date, arrival_date, place, price, currencySymbol)" +
-                " VALUES(?,?,?,?,?,?,?);";
-
-        try {
-            connect();
-            try (Statement statement = connection.createStatement()) {
-                statement.execute(droppingTable);
-                statement.execute(creatingTable);
-            }
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            try (PreparedStatement preparedStatement = connection.prepareStatement(insert)) {
-                for (OfferEntity offer : travelData.getOffers()) {
-                    preparedStatement.setString(1, offer.localization.toString());
-                    preparedStatement.setString(2, offer.country);
-                    preparedStatement.setString(3, simpleDateFormat.format(offer.departureDate));
-                    preparedStatement.setString(4, simpleDateFormat.format(offer.arrivalDate));
-                    preparedStatement.setString(5, offer.place);
-                    preparedStatement.setString(6, String.valueOf(offer.price));
-                    preparedStatement.setString(7, offer.currencySymbol);
-
-                    preparedStatement.addBatch();
-                }
-                preparedStatement.executeBatch();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        setConnection();
+        createInsertStatement();
     }
 
     public void showGui() {
         SwingUtilities.invokeLater(() -> {
-            frame = new JFrame();
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 400);
+            dbFrame = new JFrame();
+            dbFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            dbFrame.setSize(1200, 600);
 
             tableModel = new DefaultTableModel() {
                 @Override
@@ -86,8 +45,8 @@ public class Database {
                     return false;
                 }
             };
-            table = new JTable(tableModel);
-            frame.add(new JScrollPane(table), BorderLayout.CENTER);
+            dbTable = new JTable(tableModel);
+            dbFrame.add(new JScrollPane(dbTable), BorderLayout.CENTER);
 
             JPanel controlPanel = new JPanel();
             localeComboBox = new JComboBox<>(new String[]{"pl_PL", "en_GB"});
@@ -95,11 +54,11 @@ public class Database {
 
             controlPanel.add(new JLabel("Language / Język:"));
             controlPanel.add(localeComboBox);
-            frame.add(controlPanel, BorderLayout.NORTH);
+            dbFrame.add(controlPanel, BorderLayout.NORTH);
 
             updateGuiLanguage();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+            dbFrame.setLocationRelativeTo(null);
+            dbFrame.setVisible(true);
         });
     }
 
@@ -108,50 +67,112 @@ public class Database {
         String[] parts = selectedLocaleStr.split("_");
         Locale targetLocale = new Locale(parts[0], parts[1]);
 
-        ResourceBundle rb = ResourceBundle.getBundle("offers", targetLocale);
-        SimpleDateFormat outputSdf = new SimpleDateFormat("yyyy-MM-dd", targetLocale);
-        NumberFormat nf = NumberFormat.getInstance(targetLocale);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("offers", targetLocale);
 
-        // Aktualizacja tytułu okna i nagłówków kolumn
-        frame.setTitle(rb.getString("title"));
+        dbFrame.setTitle(resourceBundle.getString("title"));
         String[] columnHeaders = {
-                rb.getString("column_country"),
-                rb.getString("column_departure"),
-                rb.getString("column_arrival"),
-                rb.getString("column_place"),
-                rb.getString("column_price"),
-                rb.getString("column_currencySymbol")
+                resourceBundle.getString("column_country"),
+                resourceBundle.getString("column_departure"),
+                resourceBundle.getString("column_arrival"),
+                resourceBundle.getString("column_place"),
+                resourceBundle.getString("column_price"),
+                resourceBundle.getString("column_currencySymbol")
         };
         tableModel.setColumnIdentifiers(columnHeaders);
         tableModel.setRowCount(0);
+        selectForGui();
+    }
 
+    private String removeTable() {
+        return "DROP TABLE IF EXISTS offers;";
+    }
+
+    private String createTable() {
+        return "CREATE TABLE offers (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY," +
+                "locale VARCHAR(20)," +
+                "country VARCHAR(200)," +
+                "departure_date VARCHAR(30)," +
+                "arrival_date VARCHAR(30)," +
+                "place VARCHAR(40)," +
+                "price DOUBLE," +
+                "currencySymbol VARCHAR(30)" +
+                ");";
+    }
+
+    private String insert() {
+        return "INSERT INTO offers(" +
+                "locale, country, departure_date, arrival_date, place, price, currencySymbol)" +
+                " VALUES(?,?,?,?,?,?,?);";
+    }
+
+    private void createInsertStatement() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insert())) {
+            for (OfferEntity offer : travelData.getOffers()) {
+                preparedStatement.setString(1, offer.localization.toString());
+                preparedStatement.setString(2, offer.country);
+                preparedStatement.setString(3, simpleDateFormat.format(offer.departureDate));
+                preparedStatement.setString(4, simpleDateFormat.format(offer.arrivalDate));
+                preparedStatement.setString(5, offer.place);
+                preparedStatement.setString(6, String.valueOf(offer.price));
+                preparedStatement.setString(7, offer.currencySymbol);
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setConnection() {
+        try {
+            connect();
+            try (Statement statement = connection.createStatement()) {
+                statement.execute(removeTable());
+                statement.execute(createTable());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void selectForGui() {
+        String selectedLocaleStr = (String) localeComboBox.getSelectedItem();
+        String[] parts = selectedLocaleStr.split("_");
+        Locale targetLocale = new Locale(parts[0], parts[1]);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", targetLocale);
+        NumberFormat numberFormat = NumberFormat.getInstance(targetLocale);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("offers", targetLocale);
+        
         String selectSQL = "SELECT * FROM offers";
         try {
             connect();
-            try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(selectSQL)) {
-                while (rs.next()) {
+            try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(selectSQL)) {
+                while (resultSet.next()) {
 
-                    String srcLocStr = rs.getString("locale");
-                    String[] sParts = srcLocStr.split("_");
-                    Locale srcLocale = new Locale(sParts[0], sParts[1]);
+                    String localeLabel = resultSet.getString("locale");
+                    String[] sParts = localeLabel.split("_");
+                    Locale localization = new Locale(sParts[0], sParts[1]);
 
-                    String rawCountry = rs.getString("country");
-                    String country = travelData.translation(rawCountry, srcLocale, targetLocale);
+                    String countryLabel = resultSet.getString("country");
+                    String country = travelData.translation(countryLabel, localization, targetLocale);
 
-                    String depStr = outputSdf.format(rs.getDate("departure_date"));
-                    String retStr = outputSdf.format(rs.getDate("arrival_date"));
+                    String departureDate = simpleDateFormat.format(resultSet.getDate("departure_date"));
+                    String arrivalDate = simpleDateFormat.format(resultSet.getDate("arrival_date"));
 
-                    String destKey = rs.getString("place");
-                    String dest = destKey;
+                    String placeLabel = resultSet.getString("place");
+                    String place = placeLabel;
                     try {
-                        dest = rb.getString(destKey);
+                        place = resourceBundle.getString(placeLabel);
                     } catch (Exception _) {
                     }
 
-                    String priceStr = nf.format(rs.getDouble("price"));
-                    String currency = rs.getString("currencySymbol");
+                    String price = numberFormat.format(resultSet.getDouble("price"));
+                    String currencySymbol = resultSet.getString("currencySymbol");
 
-                    tableModel.addRow(new Object[]{country, depStr, retStr, dest, priceStr, currency});
+                    tableModel.addRow(new Object[]{country, departureDate, arrivalDate, place, price, currencySymbol});
                 }
             }
         } catch (Exception e) {

@@ -39,7 +39,8 @@ public class TravelData {
 
             try {
                 place = resourceBundle.getString(offer.place);
-            } catch (MissingResourceException _) {
+            } catch (MissingResourceException e) {
+                e.printStackTrace();
             }
 
             String price = numberFormat.format(offer.price);

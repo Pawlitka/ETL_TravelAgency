@@ -5,15 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TravelData {
-    private TsvMapper tsvMapper = new TsvMapper();
     private final List<OfferEntity> offers = new ArrayList<>();
 
     TravelData(File fileDirectory) throws IOException {
-        TsvFileReader tsvFileReader = new TsvFileReader(fileDirectory);
         if (fileDirectory == null || !fileDirectory.isDirectory()) return;
 
         File[] files = fileDirectory.listFiles();
         if (files == null) return;
+
+        TsvFileReader tsvFileReader = new TsvFileReader(fileDirectory);
         for (File file : files) {
             if (file.isFile()) {
                 List<TsvDTO> list = tsvFileReader.readFile(file);
@@ -24,11 +24,11 @@ public class TravelData {
 
     public List<String> getOffersDescriptionsList(String loc, String dateFormat) {
         TsvFileReader tsvFileReader = new TsvFileReader();
-        List<String> listOfOffers = new ArrayList<>();
-        Locale target = tsvFileReader.localizationConvert(loc);
+        List<String> offersToString = new ArrayList<>();
+        Locale target = tsvFileReader.localize(loc);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, target);
         NumberFormat numberFormat = NumberFormat.getNumberInstance(target);
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("offers", target);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", target);
 
         for (OfferEntity offer : offers) {
             String country = translation(offer.country, offer.localization, target);
@@ -45,10 +45,14 @@ public class TravelData {
 
             String price = numberFormat.format(offer.price);
 
-            String description = String.format("%s %s %s %s %s %s ", country, departure, arrival, place, price, offer.currencySymbol);
-            listOfOffers.add(description);
+            String description = returnDescription(country, departure, arrival, place, price, offer.currencySymbol);
+            offersToString.add(description);
         }
-        return listOfOffers;
+        return offersToString;
+    }
+
+    private String returnDescription(String country, String departure, String arrival, String place, String price, String currencySymnbol) {
+        return String.format("%s %s %s %s %s %s ", country, departure, arrival, place, price, currencySymnbol);
     }
 
     public String translation(String country, Locale source, Locale target) {

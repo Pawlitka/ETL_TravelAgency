@@ -8,7 +8,7 @@ public class TsvMapper {
 
     public static OfferEntity toEntity(final TsvDTO dto) {
         if (dto == null) {
-            throw new IllegalArgumentException("Input parameter dto is null.");
+            throw new IllegalArgumentException("Input parameter dto cannot be null.");
         }
 
         return new OfferEntity(

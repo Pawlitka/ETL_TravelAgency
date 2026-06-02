@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class TsvFileReader {
-    private static final Integer LINE_LENGTH = 7;
+    private static final Integer NUMBER_OF_VALUES_PER_LINE = 7;
+    private static final String TABULATOR = "\t";
     private final List<TsvDTO> records = new ArrayList<>();
     private File fileDirectory;
 
@@ -24,22 +25,22 @@ public class TsvFileReader {
     }
 
     public List<TsvDTO> readFile(File fileDirectory) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
         try {
-            BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
             String line;
             while ((line = br.readLine()) != null) {
-                String[] data = line.split("\t");
-                if (data.length >= LINE_LENGTH) {
-                    Locale localization = localizationConvert(data[0]);
+                String[] data = line.split(TABULATOR);
+                if (data.length >= NUMBER_OF_VALUES_PER_LINE) {
+                    Locale localization = localize(data[0]);
 
                     String country = data[1];
 
 
-                    Date departureDate = dateParser(data[2]);
-                    Date arrivalDate = dateParser(data[3]);
+                    Date departureDate = parseData(data[2]);
+                    Date arrivalDate = parseData(data[3]);
 
                     String place = normalizePlaces(data[4], localization);
-                    Double price = priceParser(localization, data[5]);
+                    Double price = parsePrice(localization, data[5]);
                     String currencySymbol = data[6];
 
                     records.add(
@@ -53,21 +54,21 @@ public class TsvFileReader {
         return records;
     }
 
-    public Locale localizationConvert(String data) {
-        String[] localizationParts = data.split("_");
+    public Locale localize(String text) {
+        String[] localizationParts = text.split("_");
         return Locale.of(localizationParts[0], localizationParts[1]);
     }
 
-    public Date dateParser(String date) {
-        LocalDate localDate = LocalDate.parse(date);
+    public Date parseData(String text) {
+        LocalDate localDate = LocalDate.parse(text);
 
 
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
-    public Double priceParser(Locale localization, String data) throws ParseException {
+    public Double parsePrice(Locale localization, String text) throws ParseException {
         NumberFormat format = NumberFormat.getInstance(localization);
-        Number number = format.parse(data);
+        Number number = format.parse(text);
         return number.doubleValue();
     }
 
@@ -78,21 +79,21 @@ public class TsvFileReader {
 
         return switch (language) {
             case "pl" -> switch (toLowerCase) {
-                case "morze" -> "sea";
-                case "jezioro" -> "lake";
-                case "góry" -> "mountains";
+                case "morze" -> "place.name_sea";
+                case "jezioro" -> "place.name_lake";
+                case "góry" -> "place.name_mountains";
                 default -> place;
             };
             case "de" -> switch (toLowerCase) {
-                case "meer" -> "sea";
-                case "see" -> "lake";
-                case "gebirge" -> "mountains";
+                case "meer" -> "place.name_sea";
+                case "see" -> "place.name_lake";
+                case "gebirge" -> "place.name_mountains";
                 default -> place;
             };
             case "en" -> switch (toLowerCase) {
-                case "sea" -> "sea";
-                case "lake" -> "lake";
-                case "mountains" -> "mountains";
+                case "sea" -> "place.name_sea";
+                case "lake" -> "place.name_lake";
+                case "mountains" -> "place.name_mountains";
                 default -> place;
             };
             default -> place;

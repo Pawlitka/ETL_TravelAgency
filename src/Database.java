@@ -8,8 +8,10 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class Database {
+    private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private final String url;
-
+    private final String user = "sa";
+    private final String password = "";
     private TravelData travelData;
     private Connection connection;
     private JFrame dbFrame;
@@ -24,13 +26,13 @@ public class Database {
 
     private void connect() throws SQLException {
         if (connection == null || connection.isClosed()) {
-            connection = DriverManager.getConnection(url, "sa", "");
+            connection = DriverManager.getConnection(url, user, password);
         }
     }
 
     public void create() throws SQLException {
-        setConnection();
-        createInsertStatement();
+        createEntity();
+        createOfferBatch(connection);
     }
 
     public void showGui() {
@@ -49,7 +51,7 @@ public class Database {
             dbFrame.add(new JScrollPane(dbTable), BorderLayout.CENTER);
 
             JPanel controlPanel = new JPanel();
-            localeComboBox = new JComboBox<>(new String[]{"pl_PL", "en_GB"});
+            localeComboBox = new JComboBox<>(new String[]{"pl_PL", "en_GB", "de_DE"});
             localeComboBox.addActionListener(e -> updateGuiLanguage());
 
             controlPanel.add(new JLabel("Language / Język:"));
@@ -67,71 +69,54 @@ public class Database {
         String[] parts = selectedLocaleStr.split("_");
         Locale targetLocale = new Locale(parts[0], parts[1]);
 
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("offers", targetLocale);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", targetLocale);
 
-        dbFrame.setTitle(resourceBundle.getString("title"));
-        String[] columnHeaders = {
-                resourceBundle.getString("column_country"),
-                resourceBundle.getString("column_departure"),
-                resourceBundle.getString("column_arrival"),
-                resourceBundle.getString("column_place"),
-                resourceBundle.getString("column_price"),
-                resourceBundle.getString("column_currencySymbol")
-        };
+        dbFrame.setTitle(resourceBundle.getString("table.title"));
+        String[] columnHeaders = {resourceBundle.getString("column_country"), resourceBundle.getString("column_departure"), resourceBundle.getString("column_arrival"), resourceBundle.getString("column_place"), resourceBundle.getString("column_price"), resourceBundle.getString("column_currencySymbol")};
         tableModel.setColumnIdentifiers(columnHeaders);
         tableModel.setRowCount(0);
         selectForGui();
     }
 
-    private String removeTable() {
+    private String removeOfferTable() {
         return "DROP TABLE IF EXISTS offers;";
     }
 
-    private String createTable() {
-        return "CREATE TABLE offers (" +
-                "id INT AUTO_INCREMENT PRIMARY KEY," +
-                "locale VARCHAR(20)," +
-                "country VARCHAR(200)," +
-                "departure_date VARCHAR(30)," +
-                "arrival_date VARCHAR(30)," +
-                "place VARCHAR(40)," +
-                "price DOUBLE," +
-                "currencySymbol VARCHAR(30)" +
-                ");";
+    private String createOfferTable() {
+        return "CREATE TABLE offers (" + "id INT AUTO_INCREMENT PRIMARY KEY," + "locale VARCHAR(20)," + "country VARCHAR(200)," + "departure_date VARCHAR(30)," + "arrival_date VARCHAR(30)," + "place VARCHAR(40)," + "price DOUBLE," + "currencySymbol VARCHAR(30)" + ");";
     }
 
-    private String insert() {
-        return "INSERT INTO offers(" +
-                "locale, country, departure_date, arrival_date, place, price, currencySymbol)" +
-                " VALUES(?,?,?,?,?,?,?);";
+    private String insertOfferStatement() {
+        return "INSERT INTO offers(" + "locale, country, departure_date, arrival_date, place, price, currencySymbol)" + " VALUES(?,?,?,?,?,?,?);";
     }
 
-    private void createInsertStatement() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private void createOfferBatch(
+            Connection connection) throws SQLException {
+        PreparedStatement offerStatement = connection.prepareStatement(insertOfferStatement());
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(insert())) {
+        try (offerStatement) {
             for (OfferEntity offer : travelData.getOffers()) {
-                preparedStatement.setString(1, offer.localization.toString());
-                preparedStatement.setString(2, offer.country);
-                preparedStatement.setString(3, simpleDateFormat.format(offer.departureDate));
-                preparedStatement.setString(4, simpleDateFormat.format(offer.arrivalDate));
-                preparedStatement.setString(5, offer.place);
-                preparedStatement.setString(6, String.valueOf(offer.price));
-                preparedStatement.setString(7, offer.currencySymbol);
-                preparedStatement.addBatch();
+                offerStatement.setString(1, offer.localization.toString());
+                offerStatement.setString(2, offer.country);
+                offerStatement.setString(3, SIMPLE_DATE_FORMAT.format(offer.departureDate));
+                offerStatement.setString(4, SIMPLE_DATE_FORMAT.format(offer.arrivalDate));
+                offerStatement.setString(5, offer.place);
+                offerStatement.setString(6, String.valueOf(offer.price));
+                offerStatement.setString(7, offer.currencySymbol);
+                offerStatement.addBatch();
             }
-            preparedStatement.executeBatch();
+            offerStatement.executeBatch();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void setConnection() {
+    private void createEntity() {
         try {
             connect();
             try (Statement statement = connection.createStatement()) {
-                statement.execute(removeTable());
-                statement.execute(createTable());
+                statement.execute(removeOfferTable());
+                statement.execute(createOfferTable());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,8 +129,8 @@ public class Database {
         Locale targetLocale = new Locale(parts[0], parts[1]);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", targetLocale);
         NumberFormat numberFormat = NumberFormat.getInstance(targetLocale);
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("offers", targetLocale);
-        
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", targetLocale);
+
         String selectSQL = "SELECT * FROM offers";
         try {
             connect();

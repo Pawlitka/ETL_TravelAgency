@@ -11,7 +11,7 @@ public class TravelData {
         if (fileDirectory == null || !fileDirectory.isDirectory()) return;
 
         File[] files = fileDirectory.listFiles();
-        if (files == null) return;
+        if (files == null || files.length == 0) return;
 
         TsvFileReader tsvFileReader = new TsvFileReader(fileDirectory);
         for (File file : files) {
@@ -44,15 +44,10 @@ public class TravelData {
             }
 
             String price = numberFormat.format(offer.price);
-
-            String description = returnDescription(country, departure, arrival, place, price, offer.currencySymbol);
+            String description = prepareDescription(country, departure, arrival, place, price, offer.currencySymbol);
             offersToString.add(description);
         }
         return offersToString;
-    }
-
-    private String returnDescription(String country, String departure, String arrival, String place, String price, String currencySymnbol) {
-        return String.format("%s %s %s %s %s %s ", country, departure, arrival, place, price, currencySymnbol);
     }
 
     public String translation(String country, Locale source, Locale target) {
@@ -66,5 +61,9 @@ public class TravelData {
 
     public List<OfferEntity> getOffers() {
         return offers;
+    }
+
+    private String prepareDescription(String country, String departure, String arrival, String place, String price, String currencySymnbol) {
+        return String.format("%s %s %s %s %s %s ", country, departure, arrival, place, price, currencySymnbol);
     }
 }

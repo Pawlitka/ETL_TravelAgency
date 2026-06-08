@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class TsvMapper {
 
     public static List<OfferEntity> toEntity(final List<TsvDTO> dtoList) {
         if (dtoList == null) {
-            return List.of();
+            return Collections.emptyList();
         }
         return dtoList.stream()
                 .filter(Objects::nonNull)

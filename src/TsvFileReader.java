@@ -50,13 +50,15 @@ public class TsvFileReader {
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
+        } finally {
+            br.close();
         }
         return records;
     }
 
     public Locale localize(String text) {
         String[] localizationParts = text.split("_");
-        return Locale.of(localizationParts[0], localizationParts[1]);
+        return new Locale(localizationParts[0], localizationParts[1]);
     }
 
     public Date parseData(String text) {

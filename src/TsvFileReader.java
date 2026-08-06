@@ -25,6 +25,7 @@ public class TsvFileReader {
     }
 
     public List<TsvDTO> readFile(File fileDirectory) throws IOException {
+        records.clear();
         BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
         try {
             String line;
@@ -58,6 +59,9 @@ public class TsvFileReader {
 
     public Locale localize(String text) {
         String[] localizationParts = text.split("_");
+        if (localizationParts.length != 2) {
+            throw new IllegalArgumentException("Invalid locale format: " + text);
+        }
         return new Locale(localizationParts[0], localizationParts[1]);
     }
 

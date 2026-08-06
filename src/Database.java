@@ -71,7 +71,11 @@ public class Database {
         offerStatement.setString(3, DATE_FORMAT.format(offer.departureDate));
         offerStatement.setString(4, DATE_FORMAT.format(offer.arrivalDate));
         offerStatement.setString(5, offer.place);
-        offerStatement.setString(6, String.valueOf(offer.price));
+        if (offer.price == null) {
+            offerStatement.setNull(6, Types.DOUBLE);
+        } else {
+            offerStatement.setDouble(6, offer.price);
+        }
         offerStatement.setString(7, offer.currencySymbol);
     }
 
@@ -83,7 +87,7 @@ public class Database {
                 statement.execute(prepareCreateOfferTableStatement());
             }
         } catch (SQLException e) {
-            System.out.println("Error message: " + e);
+            throw new RuntimeException("Fails to create offers table: " + e);
         }
     }
 

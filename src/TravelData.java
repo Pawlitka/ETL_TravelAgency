@@ -63,7 +63,7 @@ public class TravelData {
         return offers;
     }
 
-    private String prepareDescription(String country, String departure, String arrival, String place, String price, String currencySymnbol) {
-        return String.format("%s %s %s %s %s %s ", country, departure, arrival, place, price, currencySymnbol);
+    private String prepareDescription(String country, String departure, String arrival, String place, String price, String currencySymbol) {
+        return String.format("%s %s %s %s %s %s", country, departure, arrival, place, price, currencySymbol);
     }
 }

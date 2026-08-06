@@ -81,21 +81,21 @@ public class TsvFileReader {
 
         return switch (language) {
             case "pl" -> switch (toLowerCase) {
-                case "morze" -> "place.name_sea";
-                case "jezioro" -> "place.name_lake";
-                case "góry" -> "place.name_mountains";
+                case "morze" -> "place_name.sea";
+                case "jezioro" -> "place_name.lake";
+                case "góry" -> "place_name.mountains";
                 default -> place;
             };
             case "de" -> switch (toLowerCase) {
-                case "meer" -> "place.name_sea";
-                case "see" -> "place.name_lake";
-                case "gebirge" -> "place.name_mountains";
+                case "meer" -> "place_name.sea";
+                case "see" -> "place_name.lake";
+                case "gebirge" -> "place_name.mountains";
                 default -> place;
             };
             case "en" -> switch (toLowerCase) {
-                case "sea" -> "place.name_sea";
-                case "lake" -> "place.name_lake";
-                case "mountains" -> "place.name_mountains";
+                case "sea" -> "place_name.sea";
+                case "lake" -> "place_name.lake";
+                case "mountains" -> "place_name.mountains";
                 default -> place;
             };
             default -> place;

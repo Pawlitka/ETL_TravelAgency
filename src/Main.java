@@ -17,6 +17,7 @@ public class Main {
         String url = "jdbc:h2:./travels_db"; /*<-- tu należy wpisać URL bazy danych */
         Database db = new Database(url, travelData);
         db.create();
-        db.showGui();
+        DatabaseView databaseView = new DatabaseView(db);
+        databaseView.createView();
     }
 }

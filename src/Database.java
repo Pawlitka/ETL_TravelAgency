@@ -1,6 +1,5 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.sql.*;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -10,12 +9,8 @@ import java.util.ResourceBundle;
 public class Database {
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private final String url;
-    private TravelData travelData;
+    private final TravelData travelData;
     private Connection connection;
-    private JFrame dbFrame;
-    private JTable dbTable;
-    private JComboBox<String> localeComboBox;
-    private DefaultTableModel tableModel;
 
     public Database(String url, TravelData travelData) {
         this.url = url;
@@ -27,63 +22,12 @@ public class Database {
         createOfferBatch(connection);
     }
 
-    public void showGui() {
-        SwingUtilities.invokeLater(() -> {
-            dbFrame = new JFrame();
-            dbFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            dbFrame.setSize(1200, 600);
-
-            tableModel = new DefaultTableModel() {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
-            dbTable = new JTable(tableModel);
-            dbFrame.add(new JScrollPane(dbTable), BorderLayout.CENTER);
-
-            JPanel controlPanel = new JPanel();
-            //TODO dodać enkrypcję tłumaczeń
-            localeComboBox = new JComboBox<>(new String[]{"pl_PL", "en_GB", "de_DE"});
-            localeComboBox.addActionListener(e -> updateGuiLanguage());
-
-            controlPanel.add(new JLabel("Language / Język:"));
-            controlPanel.add(localeComboBox);
-            dbFrame.add(controlPanel, BorderLayout.NORTH);
-
-            updateGuiLanguage();
-            dbFrame.setLocationRelativeTo(null);
-            dbFrame.setVisible(true);
-        });
-    }
-
     private void connect() throws SQLException {
         if (connection == null || connection.isClosed()) {
             String user = "sa";
             String password = "";
             connection = DriverManager.getConnection(url, user, password);
         }
-    }
-
-    private void updateGuiLanguage() {
-        String selectedLocaleStr = (String) localeComboBox.getSelectedItem();
-        String[] parts = selectedLocaleStr.split("_");
-        Locale targetLocale = new Locale(parts[0], parts[1]);
-
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", targetLocale);
-
-        dbFrame.setTitle(resourceBundle.getString("table.title"));
-        String[] columnHeaders = {
-                resourceBundle.getString("columns.country"),
-                resourceBundle.getString("columns.departure"),
-                resourceBundle.getString("columns.arrival"),
-                resourceBundle.getString("columns.place"),
-                resourceBundle.getString("columns.price"),
-                resourceBundle.getString("columns.currency_symbol")
-        };
-        tableModel.setColumnIdentifiers(columnHeaders);
-        tableModel.setRowCount(0);
-        selectForGui();
     }
 
     private String prepareRemoveOfferTableStatement() {
@@ -123,7 +67,7 @@ public class Database {
         }
     }
 
-    private PreparedStatement setValues(PreparedStatement offerStatement, OfferEntity offer) throws SQLException {
+    private void setValues(PreparedStatement offerStatement, OfferEntity offer) throws SQLException {
         offerStatement.setString(1, offer.localization.toString());
         offerStatement.setString(2, offer.country);
         offerStatement.setString(3, DATE_FORMAT.format(offer.departureDate));
@@ -131,7 +75,6 @@ public class Database {
         offerStatement.setString(5, offer.place);
         offerStatement.setString(6, String.valueOf(offer.price));
         offerStatement.setString(7, offer.currencySymbol);
-        return offerStatement;
     }
 
     private void createEntity() {
@@ -142,12 +85,13 @@ public class Database {
                 statement.execute(prepareCreateOfferTableStatement());
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Error message: " + e);
         }
     }
 
-    private void selectForGui() {
+    public void selectForGui(JComboBox<String> localeComboBox, DefaultTableModel tableModel) {
         String selectedLocaleStr = (String) localeComboBox.getSelectedItem();
+        assert selectedLocaleStr != null;
         String[] parts = selectedLocaleStr.split("_");
         Locale targetLocale = new Locale(parts[0], parts[1]);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", targetLocale);
@@ -186,7 +130,7 @@ public class Database {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error message: " + e);
         }
     }
 }

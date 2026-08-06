@@ -1,10 +1,8 @@
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.sql.*;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class Database {
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -89,14 +87,8 @@ public class Database {
         }
     }
 
-    public void selectForGui(JComboBox<String> localeComboBox, DefaultTableModel tableModel) {
-        String selectedLocaleStr = (String) localeComboBox.getSelectedItem();
-        assert selectedLocaleStr != null;
-        String[] parts = selectedLocaleStr.split("_");
-        Locale targetLocale = new Locale(parts[0], parts[1]);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", targetLocale);
-        NumberFormat numberFormat = NumberFormat.getInstance(targetLocale);
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", targetLocale);
+    public List<OfferEntity> getAllOffers() {
+        List<OfferEntity> offers = new ArrayList<>();
 
         String selectSQL = "SELECT * FROM offers";
         try {
@@ -105,32 +97,25 @@ public class Database {
                  ResultSet resultSet = statement.executeQuery(selectSQL)
             ) {
                 while (resultSet.next()) {
-
                     String localeLabel = resultSet.getString("locale");
                     String[] sParts = localeLabel.split("_");
                     Locale localization = new Locale(sParts[0], sParts[1]);
 
-                    String countryLabel = resultSet.getString("country");
-                    String country = travelData.translation(countryLabel, localization, targetLocale);
-
-                    String departureDate = simpleDateFormat.format(resultSet.getDate("departure_date"));
-                    String arrivalDate = simpleDateFormat.format(resultSet.getDate("arrival_date"));
-
-                    String placeLabel = resultSet.getString("place");
-                    String place = placeLabel;
-                    try {
-                        place = resourceBundle.getString(placeLabel);
-                    } catch (Exception _) {
-                    }
-
-                    String price = numberFormat.format(resultSet.getDouble("price"));
-                    String currencySymbol = resultSet.getString("currencySymbol");
-
-                    tableModel.addRow(new Object[]{country, departureDate, arrivalDate, place, price, currencySymbol});
+                    OfferEntity offer = new OfferEntity(
+                            localization,
+                            resultSet.getString("country"),
+                            resultSet.getDate("departure_date"),
+                            resultSet.getDate("arrival_date"),
+                            resultSet.getString("place"),
+                            resultSet.getDouble("price"),
+                            resultSet.getString("currencySymbol")
+                    );
+                    offers.add(offer);
                 }
             }
         } catch (Exception e) {
             System.out.println("Error message: " + e);
         }
+        return offers;
     }
 }

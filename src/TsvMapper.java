@@ -3,8 +3,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class TsvMapper {
-    public TsvMapper() {
+public final class TsvMapper {
+    private TsvMapper() {
     }
 
     public static OfferEntity toEntity(final TsvDTO dto) {

@@ -2,7 +2,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class TravelData {
     private final List<OfferEntity> offers = new ArrayList<>();
@@ -35,12 +38,12 @@ public class TravelData {
             String departure = simpleDateFormat.format(offer.departureDate);
             String arrival = simpleDateFormat.format(offer.arrivalDate);
 
-            String place = offer.place;
+            String place;
 
-            try {
+            if (offer.place != null && resourceBundle.containsKey(offer.place)) {
                 place = resourceBundle.getString(offer.place);
-            } catch (MissingResourceException e) {
-                e.printStackTrace();
+            } else {
+                place = offer.place;
             }
 
             String price = numberFormat.format(offer.price);

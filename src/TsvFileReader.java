@@ -6,10 +6,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class TsvFileReader {
     private static final Integer NUMBER_OF_VALUES_PER_LINE = 7;
@@ -17,7 +14,7 @@ public class TsvFileReader {
     private final List<TsvDTO> records = new ArrayList<>();
     private File fileDirectory;
 
-    public TsvFileReader(File fileDirectory) throws IOException {
+    public TsvFileReader(File fileDirectory) {
         this.fileDirectory = fileDirectory;
     }
 
@@ -50,7 +47,7 @@ public class TsvFileReader {
                 }
             }
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
+            System.out.println("Error message: " + e);
         } finally {
             br.close();
         }
@@ -79,30 +76,19 @@ public class TsvFileReader {
     }
 
     private String normalizePlaces(String place, Locale localization) {
-        if (place == null) return "";
-        String toLowerCase = place.toLowerCase().trim();
-        String language = localization.getLanguage();
+        if (place == null || place.isBlank()) return "";
 
-        return switch (language) {
-            case "pl" -> switch (toLowerCase) {
-                case "morze" -> "place_name.sea";
-                case "jezioro" -> "place_name.lake";
-                case "góry" -> "place_name.mountains";
-                default -> place;
-            };
-            case "de" -> switch (toLowerCase) {
-                case "meer" -> "place_name.sea";
-                case "see" -> "place_name.lake";
-                case "gebirge" -> "place_name.mountains";
-                default -> place;
-            };
-            case "en" -> switch (toLowerCase) {
-                case "sea" -> "place_name.sea";
-                case "lake" -> "place_name.lake";
-                case "mountains" -> "place_name.mountains";
-                default -> place;
-            };
-            default -> place;
-        };
+        String keyProperty = place.toLowerCase().trim();
+
+        try {
+            ResourceBundle resourceBundle = ResourceBundle.getBundle("places", localization);
+
+            if (resourceBundle.containsKey(keyProperty)) {
+                return resourceBundle.getString(keyProperty);
+            }
+        } catch (MissingResourceException e) {
+            System.out.println("Error message: " + e);
+        }
+        return place;
     }
 }

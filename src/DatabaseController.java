@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class DatabaseController {
+    private static final Integer NUMBER_OF_COLUMNS = 6;
     private final Database database;
     private final DatabaseView databaseView;
     private final TravelData travelData;
@@ -14,7 +15,7 @@ public class DatabaseController {
         this.databaseView = databaseView;
         this.travelData = travelData;
 
-        this.databaseView.setLanguageChangeListener(e -> updateGuiForSelectedLanguage());
+        this.databaseView.setLanguageChangeListener(_ -> updateGuiForSelectedLanguage());
     }
 
     public void start() {
@@ -53,12 +54,12 @@ public class DatabaseController {
                 resourceBundle.getString("columns.arrival"),
                 resourceBundle.getString("columns.place"),
                 resourceBundle.getString("columns.price"),
-                resourceBundle.getString("columns.currency_symbol"),
+                resourceBundle.getString("columns.currency_code"),
         };
     }
 
     private Object[][] formatOffersForView(List<OfferEntity> offers, Locale targetLocale) {
-        Object[][] rowData = new Object[offers.size()][6];
+        Object[][] rowData = new Object[offers.size()][NUMBER_OF_COLUMNS];
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", targetLocale);
         NumberFormat numberFormat = NumberFormat.getInstance(targetLocale);
@@ -67,7 +68,7 @@ public class DatabaseController {
         for (int i = 0; i < offers.size(); i++) {
             OfferEntity offer = offers.get(i);
 
-            String country = travelData.translation(offer.country, offer.localization, targetLocale);
+            String country = travelData.translation(offer.countryName, offer.localization, targetLocale);
 
             String departureData = simpleDateFormat.format(offer.departureDate);
             String arrivalDate = simpleDateFormat.format(offer.arrivalDate);
@@ -78,7 +79,7 @@ public class DatabaseController {
             }
 
             String price = numberFormat.format(offer.price);
-            String currencySymbol = offer.currencySymbol;
+            String currencySymbol = offer.currencyCode;
             rowData[i] = new Object[]{
                     country, departureData, arrivalDate, place, price, currencySymbol
             };

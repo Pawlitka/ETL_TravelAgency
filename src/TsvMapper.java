@@ -7,23 +7,23 @@ public final class TsvMapper {
     private TsvMapper() {
     }
 
-    public static OfferEntity toEntity(final TsvDTO dto) {
+    public static OfferEntity toEntity(TsvDTO dto) {
         if (dto == null) {
             throw new IllegalArgumentException("Input parameter dto cannot be null.");
         }
 
         return new OfferEntity(
-                dto.localization,
-                dto.country,
-                dto.departureDate,
-                dto.arrivalDate,
-                dto.place,
-                dto.price,
-                dto.currencySymbol
+                dto.localization(),
+                dto.countryName(),
+                dto.departureDate(),
+                dto.arrivalDate(),
+                dto.place(),
+                dto.price(),
+                dto.currencyCode()
         );
     }
 
-    public static List<OfferEntity> toEntity(final List<TsvDTO> dtoList) {
+    public static List<OfferEntity> toEntity(List<TsvDTO> dtoList) {
         if (dtoList == null) {
             return Collections.emptyList();
         }

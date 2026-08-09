@@ -18,9 +18,6 @@ public class TsvFileReader {
         this.fileDirectory = fileDirectory;
     }
 
-    public TsvFileReader() {
-    }
-
     public List<TsvDTO> readFile(File fileDirectory) throws IOException {
         records.clear();
         BufferedReader br = new BufferedReader(new FileReader(fileDirectory));

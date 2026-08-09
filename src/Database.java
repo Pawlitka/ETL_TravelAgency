@@ -36,18 +36,18 @@ public class Database {
         return "CREATE TABLE offers ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "locale VARCHAR(20),"
-                + "country VARCHAR(200),"
+                + "country_name VARCHAR(200),"
                 + "departure_date VARCHAR(30),"
                 + "arrival_date VARCHAR(30),"
                 + "place VARCHAR(40),"
                 + "price DOUBLE,"
-                + "currencySymbol VARCHAR(30)"
+                + "currency_code VARCHAR(30)"
                 + ");";
     }
 
     private String prepareInsertOfferStatement() {
         return "INSERT INTO offers("
-                + "locale, country, departure_date, arrival_date, place, price, currencySymbol)"
+                + "locale, country_name, departure_date, arrival_date, place, price, currency_code)"
                 + " VALUES(?,?,?,?,?,?,?);";
     }
 
@@ -67,7 +67,7 @@ public class Database {
 
     private void setValues(PreparedStatement offerStatement, OfferEntity offer) throws SQLException {
         offerStatement.setString(1, offer.localization.toString());
-        offerStatement.setString(2, offer.country);
+        offerStatement.setString(2, offer.countryName);
         offerStatement.setString(3, DATE_FORMAT.format(offer.departureDate));
         offerStatement.setString(4, DATE_FORMAT.format(offer.arrivalDate));
         offerStatement.setString(5, offer.place);
@@ -76,7 +76,7 @@ public class Database {
         } else {
             offerStatement.setDouble(6, offer.price);
         }
-        offerStatement.setString(7, offer.currencySymbol);
+        offerStatement.setString(7, offer.currencyCode);
     }
 
     private void createEntity() {
@@ -107,12 +107,12 @@ public class Database {
 
                     OfferEntity offer = new OfferEntity(
                             localization,
-                            resultSet.getString("country"),
+                            resultSet.getString("country_name"),
                             resultSet.getDate("departure_date"),
                             resultSet.getDate("arrival_date"),
                             resultSet.getString("place"),
                             resultSet.getDouble("price"),
-                            resultSet.getString("currencySymbol")
+                            resultSet.getString("currency_code")
                     );
                     offers.add(offer);
                 }

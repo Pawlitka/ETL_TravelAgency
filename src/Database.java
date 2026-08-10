@@ -35,13 +35,13 @@ public class Database {
     private String prepareCreateOfferTableStatement() {
         return "CREATE TABLE offers ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
-                + "locale VARCHAR(20),"
+                + "locale VARCHAR(5),"
                 + "country_name VARCHAR(200),"
-                + "departure_date VARCHAR(30),"
-                + "arrival_date VARCHAR(30),"
+                + "departure_date DATE,"
+                + "arrival_date DATE,"
                 + "place VARCHAR(40),"
                 + "price DOUBLE,"
-                + "currency_code VARCHAR(30)"
+                + "currency_code VARCHAR(3)"
                 + ");";
     }
 
@@ -51,32 +51,17 @@ public class Database {
                 + " VALUES(?,?,?,?,?,?,?);";
     }
 
-    private void createOfferBatch(
-            Connection connection) throws SQLException {
+    private void createOfferBatch(Connection connection) {
 
-        try (PreparedStatement offerStatement = connection.prepareStatement(prepareInsertOfferStatement())) {
+        try (OfferStatement offerStatement = new OfferStatement(connection.prepareStatement(prepareInsertOfferStatement()))) {
             for (OfferEntity offer : travelData.getOffers()) {
-                setValues(offerStatement, offer);
+                offerStatement.setValues(offer);
                 offerStatement.addBatch();
             }
             offerStatement.executeBatch();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void setValues(PreparedStatement offerStatement, OfferEntity offer) throws SQLException {
-        offerStatement.setString(1, offer.localization.toString());
-        offerStatement.setString(2, offer.countryName);
-        offerStatement.setString(3, DATE_FORMAT.format(offer.departureDate));
-        offerStatement.setString(4, DATE_FORMAT.format(offer.arrivalDate));
-        offerStatement.setString(5, offer.place);
-        if (offer.price == null) {
-            offerStatement.setNull(6, Types.DOUBLE);
-        } else {
-            offerStatement.setDouble(6, offer.price);
-        }
-        offerStatement.setString(7, offer.currencyCode);
     }
 
     private void createEntity() {

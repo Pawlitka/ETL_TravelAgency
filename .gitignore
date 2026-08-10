@@ -29,3 +29,4 @@ bin/
 .DS_Store
 travels_db.trace.db
 travels_db.mv.db
+.idea

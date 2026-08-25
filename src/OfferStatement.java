@@ -4,9 +4,8 @@ import java.sql.Types;
 import java.text.SimpleDateFormat;
 
 public class OfferStatement implements AutoCloseable {
-    private final PreparedStatement preparedStatement;
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
+    private final PreparedStatement preparedStatement;
 
     public OfferStatement(PreparedStatement preparedStatement) {
         this.preparedStatement = preparedStatement;
@@ -16,8 +15,8 @@ public class OfferStatement implements AutoCloseable {
         this.preparedStatement.addBatch();
     }
 
-    public int[] executeBatch() throws SQLException {
-        return this.preparedStatement.executeBatch();
+    public void executeBatch() throws SQLException {
+        this.preparedStatement.executeBatch();
     }
 
     public void setValues(OfferEntity offerEntity) throws SQLException {

@@ -1,8 +1,8 @@
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 public class Database {
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -15,7 +15,7 @@ public class Database {
         this.travelData = travelData;
     }
 
-    public void create() throws SQLException {
+    public void create() {
         createEntity();
         createOfferBatch(connection);
     }
@@ -74,37 +74,5 @@ public class Database {
         } catch (SQLException e) {
             throw new RuntimeException("Fails to create offers table: " + e);
         }
-    }
-
-    public List<OfferEntity> getAllOffers() {
-        List<OfferEntity> offers = new ArrayList<>();
-
-        String selectSQL = "SELECT * FROM offers";
-        try {
-            connect();
-            try (Statement statement = connection.createStatement();
-                 ResultSet resultSet = statement.executeQuery(selectSQL)
-            ) {
-                while (resultSet.next()) {
-                    String localeLabel = resultSet.getString("locale");
-                    String[] sParts = localeLabel.split("_");
-                    Locale localization = new Locale(sParts[0], sParts[1]);
-
-                    OfferEntity offer = new OfferEntity(
-                            localization,
-                            resultSet.getString("country_name"),
-                            resultSet.getDate("departure_date"),
-                            resultSet.getDate("arrival_date"),
-                            resultSet.getString("place"),
-                            resultSet.getDouble("price"),
-                            resultSet.getString("currency_code")
-                    );
-                    offers.add(offer);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error message: " + e);
-        }
-        return offers;
     }
 }

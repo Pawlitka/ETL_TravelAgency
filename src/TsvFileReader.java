@@ -25,7 +25,7 @@ public class TsvFileReader {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(TABULATOR);
-                if (data.length >= NUMBER_OF_VALUES_PER_LINE) {
+                if (data.length == NUMBER_OF_VALUES_PER_LINE) {
                     Locale localization = localize(data[0]);
 
                     String country = data[1];
@@ -62,7 +62,6 @@ public class TsvFileReader {
     public Date parseData(String text) {
         LocalDate localDate = LocalDate.parse(text);
 
-
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
@@ -73,7 +72,8 @@ public class TsvFileReader {
     }
 
     private String normalizePlaces(String place, Locale localization) {
-        if (place == null || place.isBlank()) return "";
+        boolean isPlaceNullOrBlanc = place == null || place.isBlank();
+        if (isPlaceNullOrBlanc) return "";
 
         String keyProperty = place.toLowerCase().trim();
 

@@ -9,6 +9,7 @@ public class DatabaseController {
     private final Database database;
     private final DatabaseView databaseView;
     private final TravelData travelData;
+    private final OfferRepository offerRepository = new OfferRepository();
 
     public DatabaseController(Database database, DatabaseView databaseView, TravelData travelData) {
         this.database = database;
@@ -34,7 +35,7 @@ public class DatabaseController {
 
         updateViewLabels(targetLocale);
 
-        List<OfferEntity> offers = database.getAllOffers();
+        List<OfferEntity> offers = offerRepository.getAllOffers();
         Object[][] formattedData = formatOffersForView(offers, targetLocale);
         String[] columns = getColumnsTranslation(targetLocale);
 

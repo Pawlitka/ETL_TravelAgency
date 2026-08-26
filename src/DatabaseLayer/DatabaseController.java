@@ -3,6 +3,7 @@ package DatabaseLayer;
 import OfferLayer.OfferEntity;
 import OfferLayer.OfferRepository;
 import TravelData.TravelData;
+import UtilityClass.LocaleFactory;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -34,9 +35,8 @@ public class DatabaseController {
         if (selectedLocaleStr == null) {
             return;
         }
-
-        String[] parts = selectedLocaleStr.split("_");
-        Locale targetLocale = new Locale(parts[0], parts[1]);
+        
+        Locale targetLocale = LocaleFactory.fromString(selectedLocaleStr);
 
         updateViewLabels(targetLocale);
 

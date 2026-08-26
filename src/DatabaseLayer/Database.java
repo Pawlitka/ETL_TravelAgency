@@ -1,14 +1,25 @@
+package DatabaseLayer;
+
+import OfferLayer.OfferEntity;
+import OfferLayer.OfferStatement;
+import TravelData.TravelData;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 public class Database {
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private final String url;
     private final TravelData travelData;
-    private Connection connection;
+    public Connection connection;
 
     public Database(String url, TravelData travelData) {
         this.url = url;
@@ -20,10 +31,27 @@ public class Database {
         createOfferBatch(connection);
     }
 
-    private void connect() throws SQLException {
+    private List<String> readPropertiesToConnect() {
+        Properties properties = new Properties();
+        List<String> values = new ArrayList<>();
+        try (FileInputStream fileInputStream = new FileInputStream(".env")) {
+            properties.load(fileInputStream);
+
+            String user = properties.getProperty("USER");
+            String password = properties.getProperty("PASSWORD");
+            values.add(user);
+            values.add(password);
+        } catch (IOException e) {
+            System.out.println("Cannot load file .env" + e);
+        }
+        return values;
+    }
+
+    public void connect() throws SQLException {
+        List<String> values = readPropertiesToConnect();
         if (connection == null || connection.isClosed()) {
-            String user = "sa";
-            String password = "";
+            String user = values.get(0);
+            String password = values.get(1);
             connection = DriverManager.getConnection(url, user, password);
         }
     }

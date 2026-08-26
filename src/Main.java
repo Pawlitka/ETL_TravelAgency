@@ -1,3 +1,9 @@
+import DatabaseLayer.Database;
+import DatabaseLayer.DatabaseController;
+import DatabaseLayer.DatabaseView;
+import OfferLayer.OfferRepository;
+import TravelData.TravelData;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,9 +16,10 @@ public class Main {
 
         Database database = new Database(url, travelData);
         DatabaseView databaseView = new DatabaseView();
+        OfferRepository offerRepository = new OfferRepository(database);
 
         database.create();
-        DatabaseController databaseController = new DatabaseController(database, databaseView, travelData);
+        DatabaseController databaseController = new DatabaseController(offerRepository, databaseView, travelData);
         databaseController.start();
     }
 }

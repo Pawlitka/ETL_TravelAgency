@@ -1,3 +1,10 @@
+package TravelData;
+
+import ExtractLayer.TsvDTO;
+import ExtractLayer.TsvFileReader;
+import Mapper.TsvMapper;
+import OfferLayer.OfferEntity;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,7 +14,7 @@ import java.util.Locale;
 public class TravelData {
     private final List<OfferEntity> offers = new ArrayList<>();
 
-    TravelData(File fileDirectory) throws IOException {
+    public TravelData(File fileDirectory) throws IOException {
         if (fileDirectory == null || !fileDirectory.isDirectory()) return;
 
         File[] files = fileDirectory.listFiles();

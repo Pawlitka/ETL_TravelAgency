@@ -1,3 +1,9 @@
+package DatabaseLayer;
+
+import OfferLayer.OfferEntity;
+import OfferLayer.OfferRepository;
+import TravelData.TravelData;
+
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -6,13 +12,12 @@ import java.util.ResourceBundle;
 
 public class DatabaseController {
     private static final Integer NUMBER_OF_COLUMNS = 6;
-    private final Database database;
     private final DatabaseView databaseView;
     private final TravelData travelData;
-    private final OfferRepository offerRepository = new OfferRepository();
+    private final OfferRepository offerRepository;
 
-    public DatabaseController(Database database, DatabaseView databaseView, TravelData travelData) {
-        this.database = database;
+    public DatabaseController(OfferRepository offerRepository, DatabaseView databaseView, TravelData travelData) {
+        this.offerRepository = offerRepository;
         this.databaseView = databaseView;
         this.travelData = travelData;
 

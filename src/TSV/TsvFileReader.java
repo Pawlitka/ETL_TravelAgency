@@ -1,4 +1,4 @@
-package ExtractLayer;
+package Repository;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -42,7 +42,8 @@ public class TsvFileReader {
 
                     records.add(
                             new TsvDTO(
-                                    localization, country, departureDate, arrivalDate, place, price, currencySymbol));
+                                    localization, country, departureDate, arrivalDate, place, price, currencySymbol)
+                    );
                 }
             }
         } catch (IOException | ParseException e) {

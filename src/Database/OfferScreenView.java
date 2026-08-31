@@ -1,16 +1,18 @@
 package DatabaseLayer;
 
+import OfferLayer.OfferModel;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class DatabaseView {
+public class OfferScreenView {
     private final JComboBox<String> localeComboBox;
     private final DefaultTableModel tableModel;
     private JFrame dbFrame;
 
-    public DatabaseView() {
+    public OfferScreenView() {
         setFrame();
 
         tableModel = new DefaultTableModel() {
@@ -50,11 +52,11 @@ public class DatabaseView {
         return (String) localeComboBox.getSelectedItem();
     }
 
-    public void updateTableContent(Object[][] data, String[] column) {
+    public void updateTableContent(OfferModel data, String[] column) {
         tableModel.setColumnIdentifiers(column);
         tableModel.setRowCount(0);
-        for (Object[] row : data) {
-            tableModel.addRow(row);
+        for (int i = 0; i < data.getRowCount(); i++) {
+            tableModel.addRow(data.getRow(i));
         }
     }
 

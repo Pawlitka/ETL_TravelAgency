@@ -1,6 +1,7 @@
 package DatabaseLayer;
 
 import OfferLayer.OfferEntity;
+import OfferLayer.OfferModel;
 import OfferLayer.OfferRepository;
 import TravelData.TravelData;
 import UtilityClass.LocaleFactory;
@@ -11,13 +12,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class DatabaseController {
+public class OfferScreenController {
     private static final Integer NUMBER_OF_COLUMNS = 6;
-    private final DatabaseView databaseView;
+    private final OfferScreenView databaseView;
     private final TravelData travelData;
     private final OfferRepository offerRepository;
 
-    public DatabaseController(OfferRepository offerRepository, DatabaseView databaseView, TravelData travelData) {
+    public OfferScreenController(OfferRepository offerRepository, OfferScreenView databaseView, TravelData travelData) {
         this.offerRepository = offerRepository;
         this.databaseView = databaseView;
         this.travelData = travelData;
@@ -35,13 +36,13 @@ public class DatabaseController {
         if (selectedLocaleStr == null) {
             return;
         }
-        
+
         Locale targetLocale = LocaleFactory.fromString(selectedLocaleStr);
 
         updateViewLabels(targetLocale);
 
         List<OfferEntity> offers = offerRepository.getAllOffers();
-        Object[][] formattedData = formatOffersForView(offers, targetLocale);
+        OfferModel formattedData = formatOffersForView(offers, targetLocale);
         String[] columns = getColumnsTranslation(targetLocale);
 
         databaseView.updateTableContent(formattedData, columns);
@@ -64,7 +65,7 @@ public class DatabaseController {
         };
     }
 
-    private Object[][] formatOffersForView(List<OfferEntity> offers, Locale targetLocale) {
+    private OfferModel formatOffersForView(List<OfferEntity> offers, Locale targetLocale) {
         Object[][] rowData = new Object[offers.size()][NUMBER_OF_COLUMNS];
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", targetLocale);
@@ -90,6 +91,6 @@ public class DatabaseController {
                     country, departureData, arrivalDate, place, price, currencySymbol
             };
         }
-        return rowData;
+        return new OfferModel(rowData);
     }
 }

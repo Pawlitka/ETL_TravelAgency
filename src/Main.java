@@ -12,9 +12,8 @@ public class Main {
     public static void main(String[] args) throws IOException, SQLException {
         File dataDir = new File("data");
         TravelData travelData = new TravelData(dataDir);
-        String url = "jdbc:h2:./travels_db";
 
-        Database database = new Database(url, travelData);
+        Database database = new Database(travelData);
         OfferScreenView databaseView = new OfferScreenView();
         OfferRepository offerRepository = new OfferRepository(database);
 

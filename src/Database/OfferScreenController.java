@@ -5,13 +5,11 @@ import OfferLayer.OfferModel;
 import Repository.OfferRepository;
 import TravelData.TravelData;
 import UtilityClass.LocaleFactory;
+import UtilityClass.TranslationKey;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class OfferScreenController {
     private static final Integer NUMBER_OF_COLUMNS = 6;
@@ -42,7 +40,7 @@ public class OfferScreenController {
     }
 
     private void updateTableContent() {
-        String[] columns = getColumnsTranslation(currentLocale);
+        String[] columns = getColumnsTranslation();
 
         OfferModel formattedData = formatOffersForView(cachedOffers, currentLocale);
 
@@ -66,16 +64,8 @@ public class OfferScreenController {
         updateTableContent();
     }
 
-    private String[] getColumnsTranslation(Locale locale) {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", locale);
-        return new String[]{
-                resourceBundle.getString("columns.country"),
-                resourceBundle.getString("columns.departure"),
-                resourceBundle.getString("columns.arrival"),
-                resourceBundle.getString("columns.place"),
-                resourceBundle.getString("columns.price"),
-                resourceBundle.getString("columns.currency_code"),
-        };
+    private String[] getColumnsTranslation() {
+        return Arrays.stream(TranslationKey.TABLE_COLUMN).map(key -> currentBundle.getString(key)).toArray(String[]::new);
     }
 
     private OfferModel formatOffersForView(List<OfferEntity> offers, Locale targetLocale) {

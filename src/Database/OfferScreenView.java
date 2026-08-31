@@ -10,7 +10,13 @@ import java.awt.event.ActionListener;
 public class OfferScreenView {
     private final JComboBox<String> localeComboBox;
     private final DefaultTableModel tableModel;
+    private final String[] LOCALE_LANGUAGES = new String[]{"pl_PL", "en_GB", "de_DE"};
+    private final String LABEL_LANGUAGES = "Language / Język:";
+    private final Integer WIDTH = 1200;
+    private final Integer HEIGHT = 600;
+    private final Component SCREEN_CENTER = null;
     private JFrame dbFrame;
+
 
     public OfferScreenView() {
         setFrame();
@@ -25,19 +31,19 @@ public class OfferScreenView {
         dbFrame.add(new JScrollPane(dbTable), BorderLayout.CENTER);
 
         JPanel controlPanel = new JPanel();
-        localeComboBox = new JComboBox<>(new String[]{"pl_PL", "en_GB", "de_DE"});
+        localeComboBox = new JComboBox<>(LOCALE_LANGUAGES);
 
-        controlPanel.add(new JLabel("Language / Język:"));
+        controlPanel.add(new JLabel(LABEL_LANGUAGES));
         controlPanel.add(localeComboBox);
         dbFrame.add(controlPanel, BorderLayout.NORTH);
 
-        dbFrame.setLocationRelativeTo(null);
+        dbFrame.setLocationRelativeTo(SCREEN_CENTER);
     }
 
     private void setFrame() {
         dbFrame = new JFrame();
         dbFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        dbFrame.setSize(1200, 600);
+        dbFrame.setSize(WIDTH, HEIGHT);
     }
 
     public void createView() {

@@ -1,18 +1,18 @@
 package Mapper;
 
 import Entity.OfferEntity;
-import TSV.TsvDTO;
+import TSV.TsvOfferDTO;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class TsvMapper {
-    private TsvMapper() {
+public final class TsvOfferMapper {
+    private TsvOfferMapper() {
     }
 
-    public static OfferEntity toEntity(TsvDTO dto) {
+    public static OfferEntity toEntity(TsvOfferDTO dto) {
         if (dto == null) {
             throw new IllegalArgumentException("Input parameter dto cannot be null.");
         }
@@ -28,13 +28,13 @@ public final class TsvMapper {
         );
     }
 
-    public static List<OfferEntity> toEntity(List<TsvDTO> dtoList) {
+    public static List<OfferEntity> toEntity(List<TsvOfferDTO> dtoList) {
         if (dtoList == null) {
             return Collections.emptyList();
         }
         return dtoList.stream()
                 .filter(Objects::nonNull)
-                .map(TsvMapper::toEntity)
+                .map(TsvOfferMapper::toEntity)
                 .collect(Collectors.toList());
     }
 }

@@ -1,41 +1,51 @@
 package TravelData;
 
 import Entity.OfferEntity;
-import Mapper.TsvMapper;
-import TSV.TsvDTO;
+import Mapper.TsvOfferMapper;
 import TSV.TsvFileReader;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class TravelData {
-    private final List<OfferEntity> offers = new ArrayList<>();
+    private List<OfferEntity> offers = new ArrayList<>();
 
-    public TravelData(File fileDirectory) throws IOException {
-        if (fileDirectory == null || !fileDirectory.isDirectory()) return;
+    public TravelData(File fileDirectory) {
+        boolean isNotValidDirectory = fileDirectory == null || !fileDirectory.isDirectory();
+
+        if (isNotValidDirectory) return;
 
         File[] files = fileDirectory.listFiles();
-        if (files == null || files.length == 0) return;
+        boolean isNullOrInvalidLength = files == null || files.length == 0;
+        if (isNullOrInvalidLength) return;
 
         TsvFileReader tsvFileReader = new TsvFileReader(fileDirectory);
-        for (File file : files) {
-            if (file.isFile()) {
-                List<TsvDTO> list = tsvFileReader.readFile(file);
-                offers.addAll(TsvMapper.toEntity(list));
-            }
-        }
+
+        this.offers = Arrays.stream(files)
+                .filter(File::isFile)
+                .map(file -> {
+                    try {
+                        return tsvFileReader.readFile(file);// Convert to unchecked
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .map(TsvOfferMapper::toEntity)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
     public String translation(String country, Locale source, Locale target) {
-        for (Locale loc : Locale.getAvailableLocales()) {
-            if (loc.getDisplayCountry(source).equalsIgnoreCase(country)) {
-                return loc.getDisplayCountry(target);
-            }
-        }
-        return country;
+        return Arrays.stream(Locale.getAvailableLocales())
+                .filter(loc -> loc.getDisplayCountry(source).equalsIgnoreCase(country))
+                .map(loc -> loc.getDisplayCountry(target))
+                .findFirst()
+                .orElse(country);
     }
 
     public List<OfferEntity> getOffers() {

@@ -17,12 +17,10 @@ import java.util.Properties;
 
 public class Database {
     private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-    private final String url;
     private final TravelData travelData;
     public Connection connection;
 
-    public Database(String url, TravelData travelData) {
-        this.url = url;
+    public Database(TravelData travelData) {
         this.travelData = travelData;
     }
 
@@ -39,8 +37,10 @@ public class Database {
 
             String user = properties.getProperty("USER");
             String password = properties.getProperty("PASSWORD");
+            String url = properties.getProperty("URL");
             values.add(user);
             values.add(password);
+            values.add(url);
         } catch (IOException e) {
             System.out.println("Cannot load file .env" + e);
         }
@@ -52,6 +52,7 @@ public class Database {
         if (connection == null || connection.isClosed()) {
             String user = values.get(0);
             String password = values.get(1);
+            String url = values.get(2);
             connection = DriverManager.getConnection(url, user, password);
         }
     }

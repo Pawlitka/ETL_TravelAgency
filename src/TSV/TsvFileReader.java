@@ -13,14 +13,14 @@ import java.util.*;
 public class TsvFileReader {
     private static final Integer NUMBER_OF_VALUES_PER_LINE = 7;
     private static final String TABULATOR = "\t";
-    private final List<TsvDTO> records = new ArrayList<>();
+    private final List<TsvOfferDTO> records = new ArrayList<>();
     private File fileDirectory;
 
     public TsvFileReader(File fileDirectory) {
         this.fileDirectory = fileDirectory;
     }
 
-    public List<TsvDTO> readFile(File fileDirectory) throws IOException {
+    public List<TsvOfferDTO> readFile(File fileDirectory) throws IOException {
         records.clear();
         BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
         try {
@@ -41,7 +41,7 @@ public class TsvFileReader {
                     String currencySymbol = data[6];
 
                     records.add(
-                            new TsvDTO(
+                            new TsvOfferDTO(
                                     localization, country, departureDate, arrivalDate, place, price, currencySymbol)
                     );
                 }

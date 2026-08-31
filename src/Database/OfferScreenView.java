@@ -1,4 +1,4 @@
-package DatabaseLayer;
+package Database;
 
 import OfferLayer.OfferModel;
 
@@ -52,7 +52,7 @@ public class OfferScreenView {
         return (String) localeComboBox.getSelectedItem();
     }
 
-    public void updateTableContent(OfferModel data, String[] column) {
+    public void updateViewLabels(OfferModel data, String[] column) {
         tableModel.setColumnIdentifiers(column);
         tableModel.setRowCount(0);
         for (int i = 0; i < data.getRowCount(); i++) {

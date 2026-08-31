@@ -1,6 +1,6 @@
 package Mapper;
 
-import OfferLayer.OfferEntity;
+import Entity.OfferEntity;
 import UtilityClass.LocaleFactory;
 
 import java.sql.ResultSet;

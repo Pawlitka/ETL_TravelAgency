@@ -1,6 +1,6 @@
-package DatabaseLayer;
+package Database;
 
-import OfferLayer.OfferEntity;
+import Entity.OfferEntity;
 import OfferLayer.OfferStatement;
 import TravelData.TravelData;
 

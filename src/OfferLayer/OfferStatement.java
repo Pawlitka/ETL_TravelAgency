@@ -1,5 +1,7 @@
 package OfferLayer;
 
+import Entity.OfferEntity;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -22,17 +24,17 @@ public class OfferStatement implements AutoCloseable {
     }
 
     public void setValues(OfferEntity offerEntity) throws SQLException {
-        preparedStatement.setString(1, offerEntity.localization.toString());
-        preparedStatement.setString(2, offerEntity.countryName);
-        preparedStatement.setString(3, DATE_FORMAT.format(offerEntity.departureDate));
-        preparedStatement.setString(4, DATE_FORMAT.format(offerEntity.arrivalDate));
-        preparedStatement.setString(5, offerEntity.place);
-        if (offerEntity.price == null) {
+        preparedStatement.setString(1, offerEntity.localization().toString());
+        preparedStatement.setString(2, offerEntity.countryName());
+        preparedStatement.setString(3, DATE_FORMAT.format(offerEntity.departureDate()));
+        preparedStatement.setString(4, DATE_FORMAT.format(offerEntity.arrivalDate()));
+        preparedStatement.setString(5, offerEntity.place());
+        if (offerEntity.price() == null) {
             preparedStatement.setNull(6, Types.DOUBLE);
         } else {
-            preparedStatement.setDouble(6, offerEntity.price);
+            preparedStatement.setDouble(6, offerEntity.price());
         }
-        preparedStatement.setString(7, offerEntity.currencyCode);
+        preparedStatement.setString(7, offerEntity.currencyCode());
     }
 
     @Override

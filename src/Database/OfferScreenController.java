@@ -1,13 +1,14 @@
-package DatabaseLayer;
+package Database;
 
-import OfferLayer.OfferEntity;
+import Entity.OfferEntity;
 import OfferLayer.OfferModel;
-import OfferLayer.OfferRepository;
+import Repository.OfferRepository;
 import TravelData.TravelData;
 import UtilityClass.LocaleFactory;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -17,6 +18,9 @@ public class OfferScreenController {
     private final OfferScreenView databaseView;
     private final TravelData travelData;
     private final OfferRepository offerRepository;
+    private List<OfferEntity> cachedOffers = new ArrayList<>();
+    private Locale currentLocale;
+    private ResourceBundle currentBundle;
 
     public OfferScreenController(OfferRepository offerRepository, OfferScreenView databaseView, TravelData travelData) {
         this.offerRepository = offerRepository;
@@ -28,7 +32,21 @@ public class OfferScreenController {
 
     public void start() {
         databaseView.createView();
+        cachedOffers = offerRepository.getAllOffers();
+
         updateGuiForSelectedLanguage();
+    }
+
+    private void updateViewLabels() {
+        databaseView.setWindowTitle(currentBundle.getString("table.title"));
+    }
+
+    private void updateTableContent() {
+        String[] columns = getColumnsTranslation(currentLocale);
+
+        OfferModel formattedData = formatOffersForView(cachedOffers, currentLocale);
+
+        databaseView.updateViewLabels(formattedData, columns);
     }
 
     public void updateGuiForSelectedLanguage() {
@@ -37,20 +55,15 @@ public class OfferScreenController {
             return;
         }
 
-        Locale targetLocale = LocaleFactory.fromString(selectedLocaleStr);
+        Locale newLocale = LocaleFactory.fromString(selectedLocaleStr);
 
-        updateViewLabels(targetLocale);
+        if (!newLocale.equals(currentLocale)) {
+            currentLocale = newLocale;
+            currentBundle = ResourceBundle.getBundle("translations", currentLocale);
+        }
 
-        List<OfferEntity> offers = offerRepository.getAllOffers();
-        OfferModel formattedData = formatOffersForView(offers, targetLocale);
-        String[] columns = getColumnsTranslation(targetLocale);
-
-        databaseView.updateTableContent(formattedData, columns);
-    }
-
-    private void updateViewLabels(Locale locale) {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", locale);
-        databaseView.setWindowTitle(resourceBundle.getString("table.title"));
+        updateViewLabels();
+        updateTableContent();
     }
 
     private String[] getColumnsTranslation(Locale locale) {
@@ -75,18 +88,18 @@ public class OfferScreenController {
         for (int i = 0; i < offers.size(); i++) {
             OfferEntity offer = offers.get(i);
 
-            String country = travelData.translation(offer.countryName, offer.localization, targetLocale);
+            String country = travelData.translation(offer.countryName(), offer.localization(), targetLocale);
 
-            String departureData = simpleDateFormat.format(offer.departureDate);
-            String arrivalDate = simpleDateFormat.format(offer.arrivalDate);
+            String departureData = simpleDateFormat.format(offer.departureDate());
+            String arrivalDate = simpleDateFormat.format(offer.arrivalDate());
 
-            String place = offer.place;
-            if (resourceBundle.containsKey(offer.place)) {
-                place = resourceBundle.getString(offer.place);
+            String place = offer.place();
+            if (resourceBundle.containsKey(offer.place())) {
+                place = resourceBundle.getString(offer.place());
             }
 
-            String price = numberFormat.format(offer.price);
-            String currencySymbol = offer.currencyCode;
+            String price = numberFormat.format(offer.price());
+            String currencySymbol = offer.currencyCode();
             rowData[i] = new Object[]{
                     country, departureData, arrivalDate, place, price, currencySymbol
             };

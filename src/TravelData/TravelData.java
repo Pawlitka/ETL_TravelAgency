@@ -1,9 +1,9 @@
 package TravelData;
 
-import ExtractLayer.TsvDTO;
-import ExtractLayer.TsvFileReader;
+import Entity.OfferEntity;
 import Mapper.TsvMapper;
-import OfferLayer.OfferEntity;
+import TSV.TsvDTO;
+import TSV.TsvFileReader;
 
 import java.io.File;
 import java.io.IOException;

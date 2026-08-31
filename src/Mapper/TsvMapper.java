@@ -1,7 +1,7 @@
 package Mapper;
 
-import ExtractLayer.TsvDTO;
-import OfferLayer.OfferEntity;
+import Entity.OfferEntity;
+import TSV.TsvDTO;
 
 import java.util.Collections;
 import java.util.List;

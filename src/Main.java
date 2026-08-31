@@ -1,7 +1,7 @@
-import DatabaseLayer.Database;
-import DatabaseLayer.DatabaseController;
-import DatabaseLayer.DatabaseView;
-import OfferLayer.OfferRepository;
+import Database.Database;
+import Database.OfferScreenController;
+import Database.OfferScreenView;
+import Repository.OfferRepository;
 import TravelData.TravelData;
 
 import java.io.File;
@@ -15,11 +15,11 @@ public class Main {
         String url = "jdbc:h2:./travels_db";
 
         Database database = new Database(url, travelData);
-        DatabaseView databaseView = new DatabaseView();
+        OfferScreenView databaseView = new OfferScreenView();
         OfferRepository offerRepository = new OfferRepository(database);
 
         database.create();
-        DatabaseController databaseController = new DatabaseController(offerRepository, databaseView, travelData);
+        OfferScreenController databaseController = new OfferScreenController(offerRepository, databaseView, travelData);
         databaseController.start();
     }
 }

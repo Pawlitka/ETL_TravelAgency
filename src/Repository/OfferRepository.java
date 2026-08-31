@@ -1,6 +1,7 @@
-package OfferLayer;
+package Repository;
 
-import DatabaseLayer.Database;
+import Database.Database;
+import Entity.OfferEntity;
 import Mapper.OfferMapper;
 
 import java.sql.Connection;

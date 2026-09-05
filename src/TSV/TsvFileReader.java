@@ -1,11 +1,15 @@
 package TSV;
 
+import UtilityClass.LocaleFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -15,6 +19,7 @@ public class TsvFileReader {
     private static final String TABULATOR = "\t";
     private final List<TsvOfferDTO> records = new ArrayList<>();
     private File fileDirectory;
+
 
     public TsvFileReader(File fileDirectory) {
         this.fileDirectory = fileDirectory;
@@ -37,7 +42,7 @@ public class TsvFileReader {
                     Date arrivalDate = parseData(data[3]);
 
                     String place = normalizePlaces(data[4], localization);
-                    Double price = parsePrice(localization, data[5]);
+                    BigDecimal price = BigDecimal.valueOf(parsePrice(localization, data[5]));
                     String currencySymbol = data[6];
 
                     records.add(
@@ -47,7 +52,7 @@ public class TsvFileReader {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error message: " + e);
+            throw e;
         } catch (ParseException e) {
             throw new IOException("Failed to parse TSV file: " + fileDirectory + e);
         } finally {
@@ -57,11 +62,15 @@ public class TsvFileReader {
     }
 
     public Locale localize(String text) {
-        String[] localizationParts = text.split("_");
-        if (localizationParts.length != 2) {
-            throw new IllegalArgumentException("Invalid locale format: " + text);
+        if (text == null) {
+            throw new IllegalArgumentException("Invalid locale format: null");
         }
-        return new Locale(localizationParts[0], localizationParts[1]);
+
+        try {
+            return LocaleFactory.fromString(text);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid locale format: " + text, e);
+        }
     }
 
     public Date parseData(String text) {
@@ -72,7 +81,12 @@ public class TsvFileReader {
 
     public Double parsePrice(Locale localization, String text) throws ParseException {
         NumberFormat format = NumberFormat.getInstance(localization);
-        Number number = format.parse(text);
+
+        ParsePosition position = new ParsePosition(0);
+        Number number = format.parse(text, position);
+        if (number == null || position.getIndex() != text.length()) {
+            throw new ParseException("Invalid price format: " + text, position.getIndex());
+        }
         return number.doubleValue();
     }
 

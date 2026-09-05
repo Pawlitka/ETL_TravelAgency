@@ -74,7 +74,7 @@ public class Database {
                 + "departure_date DATE,"
                 + "arrival_date DATE,"
                 + "place VARCHAR(40),"
-                + "price DOUBLE,"
+                + "price DECIMAL(10,2),"
                 + "currency_code VARCHAR(3)"
                 + ");";
     }

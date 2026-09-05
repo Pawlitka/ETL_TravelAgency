@@ -32,7 +32,7 @@ public class OfferRepository {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Offer repository error message: " + e);
+            throw new RuntimeException("Could not load offers from database: " + e);
         }
         return offers;
     }

@@ -30,9 +30,25 @@ public class OfferScreenController {
 
     public void start() {
         databaseView.createView();
-        cachedOffers = offerRepository.getAllOffers();
 
-        updateGuiForSelectedLanguage();
+        javax.swing.SwingWorker<List<OfferEntity>, Void> worker = new javax.swing.SwingWorker<>() {
+            @Override
+            protected List<OfferEntity> doInBackground() throws Exception {
+                return offerRepository.getAllOffers();
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    cachedOffers = get();
+                    updateGuiForSelectedLanguage();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        worker.execute();
     }
 
     private void updateViewLabels() {

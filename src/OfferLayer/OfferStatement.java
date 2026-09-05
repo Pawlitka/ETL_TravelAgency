@@ -32,7 +32,7 @@ public class OfferStatement implements AutoCloseable {
         if (offerEntity.price() == null) {
             preparedStatement.setNull(6, Types.DOUBLE);
         } else {
-            preparedStatement.setDouble(6, offerEntity.price());
+            preparedStatement.setBigDecimal(6, offerEntity.price());
         }
         preparedStatement.setString(7, offerEntity.currencyCode());
     }

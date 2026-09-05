@@ -33,7 +33,10 @@ public class OfferScreenView {
         JPanel controlPanel = new JPanel();
         localeComboBox = new JComboBox<>(LOCALE_LANGUAGES);
 
-        controlPanel.add(new JLabel(LABEL_LANGUAGES));
+        JLabel languageLabel = new JLabel(LABEL_LANGUAGES);
+
+        languageLabel.setLabelFor(localeComboBox);
+
         controlPanel.add(localeComboBox);
         dbFrame.add(controlPanel, BorderLayout.NORTH);
 

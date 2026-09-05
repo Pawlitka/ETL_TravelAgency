@@ -18,7 +18,9 @@ public class TravelData {
     public TravelData(File fileDirectory) {
         boolean isNotValidDirectory = fileDirectory == null || !fileDirectory.isDirectory();
 
-        if (isNotValidDirectory) return;
+        if (isNotValidDirectory) {
+            throw new IllegalArgumentException("Data directory does not exist or is not a directory: " + fileDirectory);
+        }
 
         File[] files = fileDirectory.listFiles();
         boolean isNullOrInvalidLength = files == null || files.length == 0;

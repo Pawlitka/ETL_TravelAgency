@@ -4,7 +4,6 @@ import UtilityClass.LocaleFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -27,36 +26,39 @@ public class TsvFileReader {
 
     public List<TsvOfferDTO> readFile(File fileDirectory) throws IOException {
         records.clear();
-        BufferedReader br = new BufferedReader(new FileReader(fileDirectory));
-        try {
+        try (BufferedReader br = java.nio.file.Files.newBufferedReader(
+                fileDirectory.toPath(), java.nio.charset.StandardCharsets.UTF_8)) {
             String line;
+            int lineNumber = 0;
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(TABULATOR);
-                if (data.length == NUMBER_OF_VALUES_PER_LINE) {
-                    Locale localization = localize(data[0]);
+                lineNumber++;
 
-                    String country = data[1];
-
-
-                    Date departureDate = parseData(data[2]);
-                    Date arrivalDate = parseData(data[3]);
-
-                    String place = normalizePlaces(data[4], localization);
-                    BigDecimal price = BigDecimal.valueOf(parsePrice(localization, data[5]));
-                    String currencySymbol = data[6];
-
-                    records.add(
-                            new TsvOfferDTO(
-                                    localization, country, departureDate, arrivalDate, place, price, currencySymbol)
-                    );
+                String[] data = line.split(TABULATOR, -1);
+                if (data.length != NUMBER_OF_VALUES_PER_LINE) {
+                    throw new IllegalArgumentException("Error in file (line: " + lineNumber + ")");
                 }
+
+                Locale localization = localize(data[0]);
+
+                String country = data[1];
+
+
+                Date departureDate = parseData(data[2]);
+                Date arrivalDate = parseData(data[3]);
+
+                String place = normalizePlaces(data[4], localization);
+                BigDecimal price = BigDecimal.valueOf(parsePrice(localization, data[5]));
+                String currencySymbol = data[6];
+
+                records.add(
+                        new TsvOfferDTO(
+                                localization, country, departureDate, arrivalDate, place, price, currencySymbol)
+                );
             }
         } catch (IOException e) {
             throw e;
         } catch (ParseException e) {
             throw new IOException("Failed to parse TSV file: " + fileDirectory + e);
-        } finally {
-            br.close();
         }
         return records;
     }

@@ -24,7 +24,7 @@ public class Database {
         this.travelData = travelData;
     }
 
-    public void create() {
+    public void create() throws SQLException {
         createEntity();
         createOfferBatch(connection);
     }
@@ -85,16 +85,23 @@ public class Database {
                 + " VALUES(?,?,?,?,?,?,?);";
     }
 
-    private void createOfferBatch(Connection connection) {
+    private void createOfferBatch(Connection connection) throws SQLException {
 
         try (OfferStatement offerStatement = new OfferStatement(connection.prepareStatement(prepareInsertOfferStatement()))) {
+            connection.setAutoCommit(false); // Wyłączamy auto-commit
             for (OfferEntity offer : travelData.getOffers()) {
                 offerStatement.setValues(offer);
                 offerStatement.addBatch();
             }
+            // Operacje wstawiania paczki...
             offerStatement.executeBatch();
+
+            connection.commit(); // Zatwierdzamy dopiero, gdy wszystko poszło OK
         } catch (SQLException e) {
+            connection.rollback(); // W razie błędu cofamy zmiany wstawiania
             throw new RuntimeException(e);
+        } finally {
+            connection.setAutoCommit(true); // Przywracamy domyślny stan
         }
     }
 

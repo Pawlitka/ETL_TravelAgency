@@ -14,11 +14,13 @@ public class Main {
         TravelData travelData = new TravelData(dataDir);
 
         Database database = new Database(travelData);
-        OfferScreenView databaseView = new OfferScreenView();
-        OfferRepository offerRepository = new OfferRepository(database);
-
         database.create();
-        OfferScreenController databaseController = new OfferScreenController(offerRepository, databaseView, travelData);
-        databaseController.start();
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            OfferScreenView databaseView = new OfferScreenView();
+            OfferRepository offerRepository = new OfferRepository(database);
+            OfferScreenController databaseController =
+                    new OfferScreenController(offerRepository, databaseView, travelData);
+            databaseController.start();
+        });
     }
 }

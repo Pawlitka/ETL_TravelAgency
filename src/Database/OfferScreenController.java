@@ -44,7 +44,7 @@ public class OfferScreenController {
                     cachedOffers = get();
                     updateGuiForSelectedLanguage();
                 } catch (ExecutionException | InterruptedException e) {
-                    System.out.println("Exception: " + e);
+                    throw new IllegalArgumentException("Exception: ", e);
                 }
             }
         };

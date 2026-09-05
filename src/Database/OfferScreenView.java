@@ -37,6 +37,7 @@ public class OfferScreenView {
 
         languageLabel.setLabelFor(localeComboBox);
 
+        controlPanel.add(languageLabel);
         controlPanel.add(localeComboBox);
         dbFrame.add(controlPanel, BorderLayout.NORTH);
 

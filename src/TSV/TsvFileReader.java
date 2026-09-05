@@ -91,10 +91,10 @@ public class TsvFileReader {
     }
 
     private String normalizePlaces(String place, Locale localization) {
-        boolean isPlaceNullOrBlanc = place == null || place.isBlank();
-        if (isPlaceNullOrBlanc) return "";
+        boolean isPlaceNullOrBlank = place == null || place.isBlank();
+        if (isPlaceNullOrBlank) return "";
 
-        String keyProperty = place.toLowerCase().trim();
+        String keyProperty = place.trim().toLowerCase(localization);
 
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle("places", localization);

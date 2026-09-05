@@ -83,9 +83,12 @@ public class OfferScreenController {
             String departureData = simpleDateFormat.format(offer.departureDate());
             String arrivalDate = simpleDateFormat.format(offer.arrivalDate());
 
-            String place = offer.place();
-            if (resourceBundle.containsKey(offer.place())) {
-                place = resourceBundle.getString(offer.place());
+
+            String placeKey = offer.place();
+            boolean isPlaceKeyNullAndResourceBundleContainPlaceKey = placeKey != null && resourceBundle.containsKey(placeKey);
+            String place = placeKey;
+            if (isPlaceKeyNullAndResourceBundleContainPlaceKey) {
+                place = resourceBundle.getString(placeKey);
             }
 
             String price = offer.price() == null ? "" : numberFormat.format(offer.price());

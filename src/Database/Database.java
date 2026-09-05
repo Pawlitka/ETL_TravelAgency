@@ -49,7 +49,12 @@ public class Database {
 
     public void connect() throws SQLException {
         List<String> values = readPropertiesToConnect();
-        if (connection == null || connection.isClosed()) {
+        boolean isLengthValidOrValuesAreNull = values.size() < 3 || values.get(0) == null || values.get(1) == null || values.get(2) == null;
+        if (isLengthValidOrValuesAreNull) {
+            throw new IllegalStateException("Database connection properties are missing!");
+        }
+        boolean isConnectionNullOrClosed = connection == null || connection.isClosed();
+        if (isConnectionNullOrClosed) {
             String user = values.get(0);
             String password = values.get(1);
             String url = values.get(2);

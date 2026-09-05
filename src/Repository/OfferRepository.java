@@ -4,7 +4,6 @@ import Database.Database;
 import Entity.OfferEntity;
 import Mapper.OfferMapper;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.List;
 
 
 public class OfferRepository {
-    private Connection connection;
     private final Database database;
 
     public OfferRepository(Database database) {

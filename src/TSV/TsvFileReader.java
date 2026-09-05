@@ -46,8 +46,10 @@ public class TsvFileReader {
                     );
                 }
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             System.out.println("Error message: " + e);
+        } catch (ParseException e) {
+            throw new IOException("Failed to parse TSV file: " + fileDirectory + e);
         } finally {
             br.close();
         }

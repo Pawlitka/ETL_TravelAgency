@@ -62,8 +62,12 @@ public class Database {
         }
     }
 
-    private String prepareCreateOfferTableStatement(String tableName) {
-        return "CREATE TABLE " + tableName + " ("
+    private String prepareDropOfferTableStatement() {
+        return "DROP TABLE IF EXISTS offers";
+    }
+
+    private String prepareCreateOfferTableStatement() {
+        return "CREATE TABLE offers ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "locale VARCHAR(5),"
                 + "country_name VARCHAR(200),"
@@ -107,9 +111,9 @@ public class Database {
             connection.setAutoCommit(false);
 
             try (Statement statement = connection.createStatement()) {
-                statement.execute("DROP TABLE IF EXISTS offer_staging");
+                statement.execute(prepareDropOfferTableStatement());
 
-                statement.execute(prepareCreateOfferTableStatement("offer_staging"));
+                statement.execute(prepareCreateOfferTableStatement());
 
                 connection.commit();
             } catch (SQLException e) {

@@ -29,7 +29,7 @@ public class TravelData {
         TsvFileReader tsvFileReader = new TsvFileReader(fileDirectory);
 
         this.offers = Arrays.stream(files)
-                .filter(File::isFile)
+                .filter(file -> file.isFile() && file.getName().toLowerCase(Locale.ROOT).endsWith(".tsv"))
                 .map(file -> {
                     try {
                         return tsvFileReader.readFile(file);// Convert to unchecked

@@ -10,6 +10,7 @@ import UtilityClass.TranslationKey;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 public class OfferScreenController {
     private static final Integer NUMBER_OF_COLUMNS = 6;
@@ -42,8 +43,8 @@ public class OfferScreenController {
                 try {
                     cachedOffers = get();
                     updateGuiForSelectedLanguage();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (ExecutionException | InterruptedException e) {
+                    System.out.println("Exception: " + e);
                 }
             }
         };
@@ -91,10 +92,16 @@ public class OfferScreenController {
         NumberFormat numberFormat = NumberFormat.getInstance(targetLocale);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("translations", targetLocale);
 
+        Map<String, String> countryCache = new HashMap<>();
+
         for (int i = 0; i < offers.size(); i++) {
             OfferEntity offer = offers.get(i);
 
-            String country = travelData.translation(offer.countryName(), offer.localization(), targetLocale);
+            String cacheKey = offer.countryName() + "_" + offer.localization() + "_" + targetLocale;
+
+            String country = countryCache.computeIfAbsent(cacheKey, k ->
+                    travelData.translation(offer.countryName(), offer.localization(), targetLocale)
+            );
 
             String departureData = simpleDateFormat.format(offer.departureDate());
             String arrivalDate = simpleDateFormat.format(offer.arrivalDate());

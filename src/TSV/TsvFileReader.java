@@ -16,7 +16,6 @@ import java.util.*;
 public class TsvFileReader {
     private static final Integer NUMBER_OF_VALUES_PER_LINE = 7;
     private static final String TABULATOR = "\t";
-    private final List<TsvOfferDTO> records = new ArrayList<>();
     private File fileDirectory;
 
 
@@ -25,7 +24,7 @@ public class TsvFileReader {
     }
 
     public List<TsvOfferDTO> readFile(File fileDirectory) throws IOException {
-        records.clear();
+        List<TsvOfferDTO> records = new ArrayList<>();
         try (BufferedReader br = java.nio.file.Files.newBufferedReader(
                 fileDirectory.toPath(), java.nio.charset.StandardCharsets.UTF_8)) {
             String line;

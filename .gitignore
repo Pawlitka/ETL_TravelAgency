@@ -31,3 +31,4 @@ travels_db.trace.db
 travels_db.mv.db
 .idea
 .env
+target

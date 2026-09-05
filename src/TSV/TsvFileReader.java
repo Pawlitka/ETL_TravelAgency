@@ -57,7 +57,7 @@ public class TsvFileReader {
         } catch (IOException e) {
             throw e;
         } catch (ParseException e) {
-            throw new IOException("Failed to parse TSV file: " + fileDirectory + e);
+            throw new IOException("Failed to parse TSV file: " + fileDirectory, e);
         }
         return records;
     }

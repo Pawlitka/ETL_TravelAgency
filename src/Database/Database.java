@@ -62,12 +62,8 @@ public class Database {
         }
     }
 
-    private String prepareRemoveOfferTableStatement() {
-        return "DROP TABLE IF EXISTS offers;";
-    }
-
-    private String prepareCreateOfferTableStatement() {
-        return "CREATE TABLE offers ("
+    private String prepareCreateOfferTableStatement(String tableName) {
+        return "CREATE TABLE " + tableName + " ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY,"
                 + "locale VARCHAR(5),"
                 + "country_name VARCHAR(200),"
@@ -108,12 +104,20 @@ public class Database {
     private void createEntity() {
         try {
             connect();
+            connection.setAutoCommit(false);
+
             try (Statement statement = connection.createStatement()) {
-                statement.execute(prepareRemoveOfferTableStatement());
-                statement.execute(prepareCreateOfferTableStatement());
+                statement.execute("DROP TABLE IF EXISTS offer_staging");
+
+                statement.execute(prepareCreateOfferTableStatement("offer_staging"));
+
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Fails to create offers table: " + e);
+            throw new RuntimeException("Fails to create offer staging table: " + e, e);
         }
     }
 }

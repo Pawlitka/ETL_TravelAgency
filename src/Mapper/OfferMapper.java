@@ -18,7 +18,7 @@ public class OfferMapper {
                 resultSet.getDate("departure_date"),
                 resultSet.getDate("arrival_date"),
                 resultSet.getString("place"),
-                resultSet.getDouble("price"),
+                resultSet.getObject("price", Double.class),
                 resultSet.getString("currency_code")
         );
     }

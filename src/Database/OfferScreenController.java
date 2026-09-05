@@ -88,7 +88,7 @@ public class OfferScreenController {
                 place = resourceBundle.getString(offer.place());
             }
 
-            String price = numberFormat.format(offer.price());
+            String price = offer.price() == null ? "" : numberFormat.format(offer.price());
             String currencySymbol = offer.currencyCode();
             rowData[i] = new Object[]{
                     country, departureData, arrivalDate, place, price, currencySymbol

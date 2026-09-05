@@ -17,7 +17,7 @@ public class OfferModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return data.length;
+        return data.length == 0 ? 0 : data[0].length;
     }
 
     @Override

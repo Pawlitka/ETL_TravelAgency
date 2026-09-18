@@ -7,6 +7,7 @@ import TravelData.TravelData;
 import UtilityClass.LocaleFactory;
 import UtilityClass.TranslationKey;
 
+import javax.swing.*;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,7 +33,7 @@ public class OfferScreenController {
     public void start() {
         databaseView.createView();
 
-        javax.swing.SwingWorker<List<OfferEntity>, Void> worker = new javax.swing.SwingWorker<>() {
+        SwingWorker<List<OfferEntity>, Void> worker = new SwingWorker<>() {
             @Override
             protected List<OfferEntity> doInBackground() throws Exception {
                 return offerRepository.getAllOffers();

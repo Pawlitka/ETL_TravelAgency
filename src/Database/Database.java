@@ -88,20 +88,19 @@ public class Database {
     private void createOfferBatch(Connection connection) throws SQLException {
 
         try (OfferStatement offerStatement = new OfferStatement(connection.prepareStatement(prepareInsertOfferStatement()))) {
-            connection.setAutoCommit(false); // Wyłączamy auto-commit
+            connection.setAutoCommit(false);
             for (OfferEntity offer : travelData.getOffers()) {
                 offerStatement.setValues(offer);
                 offerStatement.addBatch();
             }
-            // Operacje wstawiania paczki...
             offerStatement.executeBatch();
 
-            connection.commit(); // Zatwierdzamy dopiero, gdy wszystko poszło OK
+            connection.commit();
         } catch (SQLException e) {
-            connection.rollback(); // W razie błędu cofamy zmiany wstawiania
+            connection.rollback();
             throw new RuntimeException(e);
         } finally {
-            connection.setAutoCommit(true); // Przywracamy domyślny stan
+            connection.setAutoCommit(true);
         }
     }
 

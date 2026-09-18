@@ -115,10 +115,12 @@ public class OfferScreenController {
                 place = resourceBundle.getString(placeKey);
             }
 
-            String price = offer.price() == null ? "" : numberFormat.format(offer.price());
+            numberFormat.setMinimumFractionDigits(2);
+            numberFormat.setMaximumFractionDigits(2);
+            String priceText = offer.price() == null ? "" : numberFormat.format(offer.price());
             String currencySymbol = offer.currencyCode();
             rowData[i] = new Object[]{
-                    country, departureData, arrivalDate, place, price, currencySymbol
+                    country, departureData, arrivalDate, place, priceText, currencySymbol
             };
         }
         return new OfferModel(rowData);

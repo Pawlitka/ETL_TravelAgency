@@ -109,9 +109,9 @@ public class OfferScreenController {
 
 
             String placeKey = offer.place();
-            boolean isPlaceKeyNullAndResourceBundleContainPlaceKey = placeKey != null && resourceBundle.containsKey(placeKey);
+            boolean isPlaceKeyNotNullAndResourceBundleContainPlaceKey = placeKey != null && resourceBundle.containsKey(placeKey);
             String place = placeKey;
-            if (isPlaceKeyNullAndResourceBundleContainPlaceKey) {
+            if (isPlaceKeyNotNullAndResourceBundleContainPlaceKey) {
                 place = resourceBundle.getString(placeKey);
             }
 

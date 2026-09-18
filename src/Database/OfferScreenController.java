@@ -118,9 +118,9 @@ public class OfferScreenController {
             numberFormat.setMinimumFractionDigits(2);
             numberFormat.setMaximumFractionDigits(2);
             String priceText = offer.price() == null ? "" : numberFormat.format(offer.price());
-            String currencySymbol = offer.currencyCode();
+            String currencyCode = offer.currencyCode();
             rowData[i] = new Object[]{
-                    country, departureData, arrivalDate, place, priceText, currencySymbol
+                    country, departureData, arrivalDate, place, priceText, currencyCode
             };
         }
         return new OfferModel(rowData);

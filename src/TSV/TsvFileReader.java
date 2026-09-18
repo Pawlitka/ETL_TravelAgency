@@ -47,11 +47,11 @@ public class TsvFileReader {
 
                 String place = normalizePlaces(data[4], localization);
                 BigDecimal price = BigDecimal.valueOf(parsePrice(localization, data[5]));
-                String currencySymbol = data[6];
+                String currencyCode = data[6];
 
                 records.add(
                         new TsvOfferDTO(
-                                localization, country, departureDate, arrivalDate, place, price, currencySymbol)
+                                localization, country, departureDate, arrivalDate, place, price, currencyCode)
                 );
             }
         } catch (IOException e) {
